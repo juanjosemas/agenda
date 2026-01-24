@@ -26,6 +26,15 @@ function init() {
     setupSwipe();
 }
 
+/* FUNCIONES DE LA PORTADA */
+function openNotebook() {
+    notebook.classList.remove('is-closed');
+}
+
+function closeNotebook() {
+    notebook.classList.add('is-closed');
+}
+
 function goToToday() { offset = 0; render(); }
 
 function jumpToDate(dateString) {
@@ -42,6 +51,7 @@ function jumpToDate(dateString) {
         offset = diffDays;
     }
     render();
+    openNotebook(); 
 }
 
 function render() {
@@ -109,7 +119,6 @@ function renderPageLines(container, data) {
             }
         };
 
-        // Pulsación larga / Click derecho para resaltar
         lineDiv.oncontextmenu = (e) => {
             e.preventDefault();
             if(db[data.key] && db[data.key][i]) {
@@ -129,7 +138,7 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
     const picker = document.createElement('div');
     picker.className = 'color-picker';
     
-    ['black', 'blue', 'red', 'green'].forEach(col => {
+    ['black', 'blue', 'red', 'green', 'orange'].forEach(col => {
         const dot = document.createElement('div');
         dot.className = `color-dot dot-${col}`;
         dot.onmousedown = (e) => {
@@ -192,36 +201,6 @@ function save() {
     localStorage.setItem('agenda_v9', JSON.stringify(db)); 
 }
 
-function exportData() {
-    try {
-        const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = "copia_seguridad_agenda.json";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    } catch (err) { alert("Error al exportar: " + err); }
-}
-
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const importedDb = JSON.parse(e.target.result);
-            if (confirm("Se sobrescribirán todos los datos. ¿Continuar?")) {
-                db = importedDb;
-                save(); location.reload();
-            }
-        } catch(err) { alert("Archivo no válido."); }
-    };
-    reader.readAsText(file);
-}
-
 function toggleSettings() {
     const m = document.getElementById('settings-modal');
     m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
@@ -268,6 +247,8 @@ function setupSwipe() {
     let startX = 0;
     swipeArea.ontouchstart = e => startX = e.touches[0].clientX;
     swipeArea.ontouchend = e => {
+        if (notebook.classList.contains('is-closed')) return;
+
         let diff = startX - e.changedTouches[0].clientX;
         if (Math.abs(diff) < 60) return;
         notebook.classList.add('notebook-turning');
@@ -284,6 +265,68 @@ function setupSwipe() {
             pR.classList.remove('page-turn-forward', 'page-turn-backward');
             setTimeout(() => notebook.classList.remove('notebook-turning'), 300);
         }, 300);
+    }
+}
+
+function clearAllData() {
+    const confirmation = confirm("¿Estás SEGURO de que quieres borrar TODAS las notas de la agenda? Esta acción no se puede deshacer.");
+    if (confirmation) {
+        db = {}; 
+        save();  
+        render(); 
+        toggleSettings(); 
+        alert("La agenda ha sido vaciada por completo.");
+    }
+}
+
+function openSummary() {
+    const container = document.getElementById('summary-list-container');
+    container.innerHTML = '';
+    const keys = Object.keys(db).sort();
+    
+    if (keys.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">No hay notas guardadas aún.</p>';
+    } else {
+        keys.forEach(key => {
+            const dayNotes = db[key];
+            const noteIndices = Object.keys(dayNotes);
+            if (noteIndices.length > 0) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'summary-day-item';
+                const dateObj = new Date(key + "T00:00:00");
+                const dateString = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                const header = document.createElement('div');
+                header.className = 'summary-day-header';
+                header.innerText = dateString;
+                header.onclick = () => { jumpToDate(key); closeSummary(); };
+                itemDiv.appendChild(header);
+                noteIndices.forEach(idx => {
+                    const note = dayNotes[idx];
+                    const p = document.createElement('div');
+                    p.className = 'summary-note';
+                    p.innerText = note.text;
+                    p.style.color = getInkColorCode(note.color);
+                    if (note.done) p.style.textDecoration = 'line-through';
+                    itemDiv.appendChild(p);
+                });
+                container.appendChild(itemDiv);
+            }
+        });
+    }
+    document.getElementById('summary-modal').style.display = 'flex';
+}
+
+function closeSummary() {
+    document.getElementById('summary-modal').style.display = 'none';
+}
+
+function getInkColorCode(colorName) {
+    switch(colorName) {
+        case 'blue': return '#1a4a9e';
+        case 'red': return '#a32a2a';
+        case 'green': return '#1a632e';
+        case 'orange': return '#ff8000';
+        default: return 'inherit';
     }
 }
 

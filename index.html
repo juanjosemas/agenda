@@ -19,12 +19,23 @@
             <div class="icons">         
                 <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
                 <button class="icon-btn" onclick="document.getElementById('date-search-input').showPicker()" title="Buscar Fecha">🔍</button>
+                <button class="icon-btn" onclick="openSummary()" title="Ver todas las notas">📋</button>
                 <button class="icon-btn" onclick="goToToday()" title="Ir a Hoy">📅</button>
                 <button class="icon-btn" onclick="toggleSettings()" title="Ajustes">⚙️</button>
             </div>
         </header>
 
-        <div class="notebook-container" id="swipe-area">
+        <div class="notebook-container is-closed" id="swipe-area">
+            
+            <!-- PORTADA DE LA LIBRETA -->
+            <div class="notebook-cover" onclick="openNotebook()">
+                <div class="cover-decoration"></div>
+                <h1>AGENDA</h1>
+                <p>Mi Plan Semanal</p>
+                <div class="cover-decoration"></div>
+                <small style="color:rgba(255,215,0,0.5); font-style:italic;">Clic para abrir</small>
+            </div>
+
             <div class="page left-page">
                 <div class="lines-container" id="lines-l"></div>
             </div>
@@ -80,12 +91,21 @@
             </div>
 
             <hr>
-            <h4>Copia de Seguridad</h4>
-            <button class="btn-block" onclick="exportData()">📥 Guardar Agenda en Archivo</button>
-            <button class="btn-block" onclick="document.getElementById('import-file').click()">📤 Cargar desde Archivo</button>
-            <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+            <h4>Acciones</h4>
+            <button class="btn-block" onclick="closeNotebook(); toggleSettings();">📕 Cerrar Libreta</button>
+            
+            <button class="btn-block" style="color: #a32a2a; font-weight: bold; margin-top: 10px;" onclick="clearAllData()">⚠️ Borrar toda la agenda</button>
 
             <button class="btn-block" style="background:#333; color:white; margin-top:20px" onclick="toggleSettings()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE RESUMEN DE NOTAS (ÍNDICE) -->
+    <div id="summary-modal" class="modal-overlay">
+        <div class="modal-content wide">
+            <h3>Índice de Notas</h3>
+            <div id="summary-list-container" class="summary-list"></div>
+            <button class="btn-block" style="background:#333; color:white; margin-top:20px" onclick="closeSummary()">Cerrar</button>
         </div>
     </div>
 
