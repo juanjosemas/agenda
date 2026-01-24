@@ -3,7 +3,6 @@ let db = JSON.parse(localStorage.getItem('agenda_v9')) || {};
 
 let settings = JSON.parse(localStorage.getItem('agenda_settings')) || {
     paper: 'plain',
-    darkMode: false,
     fontSize: 'medium',
     viewMode: 'double'
 };
@@ -17,7 +16,6 @@ const notebook = document.querySelector('.notebook-container');
 
 function init() {
     document.getElementById('setting-paper').value = settings.paper;
-    document.getElementById('setting-dark').checked = settings.darkMode;
     document.getElementById('setting-font-size').value = settings.fontSize;
     document.getElementById('setting-view').value = settings.viewMode;
 
@@ -132,6 +130,9 @@ function renderPageLines(container, data) {
 }
 
 function startEditing(lineDiv, key, index, currentText, currentColor) {
+    // Guardar el estado de resaltado para no perderlo al editar
+    const isHigh = (db[key] && db[key][index] && db[key][index].high);
+    
     lineDiv.innerHTML = ''; 
     let tempColor = currentColor || 'black';
 
@@ -154,8 +155,11 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
     input.className = `note-input ink-${tempColor}`;
     input.value = currentText === "" ? "*- " : currentText;
     lineDiv.appendChild(input);
+    
+    // Ajustar altura inicial basada en el contenido
     input.style.height = '28px';
     input.style.height = input.scrollHeight + 'px';
+    
     input.focus();
     input.setSelectionRange(input.value.length, input.value.length);
     
@@ -165,7 +169,6 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
         if (txt === "" || txt === "*-") {
             delete db[key][index];
         } else {
-            const isHigh = (db[key] && db[key][index] && db[key][index].high) ? true : false;
             db[key][index] = { text: txt, done: false, high: isHigh, color: tempColor };
         }
         save(); render(); 
@@ -208,13 +211,12 @@ function toggleSettings() {
 
 function applySettings() {
     settings.paper = document.getElementById('setting-paper').value;
-    settings.darkMode = document.getElementById('setting-dark').checked;
     settings.fontSize = document.getElementById('setting-font-size').value;
     settings.viewMode = document.getElementById('setting-view').value;
     localStorage.setItem('agenda_settings', JSON.stringify(settings));
 
-    document.body.className = settings.darkMode ? 'night-mode' : '';
     if (settings.viewMode === 'single') document.body.classList.add('view-single');
+    else document.body.classList.remove('view-single');
 
     const pages = document.querySelectorAll('.page');
     pages.forEach(p => {
