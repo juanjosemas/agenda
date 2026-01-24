@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agenda Plan Semanal Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Amatic+SC:wght@700&family=Caveat:wght@700&family=Dancing+Script:wght@700&family=Lobster&family=Metal+Mania&family=Yellowtail&family=Permanent+Marker&family=Piedra&family=Sriracha&display=swap" rel="stylesheet">
+    </head>
+
+<body>
+    <div class="wood-background">
+         <header class="top-bar">
+             <div class="date-info">
+                <span id="month-year">---</span>
+                <small id="week-display">Semana --</small>
+        
+            </div>
+            <div class="icons">         
+                <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
+                <button class="icon-btn" onclick="document.getElementById('date-search-input').showPicker()" title="Buscar Fecha">🔍</button>
+                <button class="icon-btn" onclick="goToToday()" title="Ir a Hoy">📅</button>
+                <button class="icon-btn" onclick="toggleSettings()" title="Ajustes">⚙️</button>
+            </div>
+        </header>
+
+        <div class="notebook-container" id="swipe-area">
+            <div class="page left-page">
+                <div class="lines-container" id="lines-l"></div>
+            </div>
+
+            <div class="spiral">
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+            </div>
+
+            <div class="page right-page">
+                <div class="lines-container" id="lines-r"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE AJUSTES -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Ajustes de Agenda</h3>
+            
+            <div class="setting-item">
+                <label>Vista:</label>
+                <select id="setting-view" onchange="applySettings()">
+                    <option value="double">Abierta (2 días)</option>
+                    <option value="single">Simple (1 día)</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label>Papel:</label>
+                <select id="setting-paper" onchange="applySettings()">
+                    <option value="plain">Blanco</option>
+                    <option value="ruled">Rayado</option>
+                    <option value="grid">Cuadriculado</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label>Tamaño Letra:</label>
+                <select id="setting-font-size" onchange="applySettings()">
+                    <option value="small">Pequeño</option>
+                    <option value="medium">Normal</option>
+                    <option value="large">Grande</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label>Modo Noche:</label>
+                <input type="checkbox" id="setting-dark" onchange="applySettings()">
+            </div>
+
+            <hr>
+            <h4>Copia de Seguridad</h4>
+            <button class="btn-block" onclick="exportData()">📥 Guardar Agenda en Archivo</button>
+            <button class="btn-block" onclick="document.getElementById('import-file').click()">📤 Cargar desde Archivo</button>
+            <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+
+            <button class="btn-block" style="background:#333; color:white; margin-top:20px" onclick="toggleSettings()">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
