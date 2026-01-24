@@ -8,6 +8,8 @@ let settings = JSON.parse(localStorage.getItem('agenda_settings')) || {
 };
 
 let clickTimer = null; 
+let longPressTimer = null; 
+let isLongPressActive = false; 
 
 const linesL = document.getElementById('lines-l');
 const linesR = document.getElementById('lines-r');
@@ -103,7 +105,38 @@ function renderPageLines(container, data) {
         };
         lineDiv.appendChild(del);
 
+        // --- GESTIÓN DE PULSACIÓN LARGA ---
+        const startPress = () => {
+            isLongPressActive = false;
+            longPressTimer = setTimeout(() => {
+                if(lineData.text !== "") {
+                    isLongPressActive = true;
+                    if (!db[data.key]) db[data.key] = {};
+                    db[data.key][i].high = !db[data.key][i].high; // Interruptor ON/OFF
+                    save(); 
+                    render();
+                }
+            }, 600); // Tiempo para detectar pulsación larga
+        };
+
+        const endPress = () => {
+            clearTimeout(longPressTimer);
+        };
+
+        lineDiv.onmousedown = startPress;
+        lineDiv.ontouchstart = startPress;
+        
+        lineDiv.onmouseup = endPress;
+        lineDiv.onmouseleave = endPress;
+        lineDiv.ontouchend = endPress;
+
+        // --- GESTIÓN DE CLIC ---
         lineDiv.onclick = (e) => {
+            if (isLongPressActive) {
+                isLongPressActive = false; // Resetear bandera
+                return;
+            }
+
             if (clickTimer == null) {
                 clickTimer = setTimeout(() => {
                     clickTimer = null;
@@ -117,20 +150,13 @@ function renderPageLines(container, data) {
             }
         };
 
-        lineDiv.oncontextmenu = (e) => {
-            e.preventDefault();
-            if(db[data.key] && db[data.key][i]) {
-                db[data.key][i].high = !db[data.key][i].high;
-                save(); render();
-            }
-        };
+        lineDiv.oncontextmenu = (e) => e.preventDefault(); // Bloquear menú contextual
 
         container.appendChild(lineDiv);
     }
 }
 
 function startEditing(lineDiv, key, index, currentText, currentColor) {
-    // Guardar el estado de resaltado para no perderlo al editar
     const isHigh = (db[key] && db[key][index] && db[key][index].high);
     
     lineDiv.innerHTML = ''; 
@@ -156,7 +182,6 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
     input.value = currentText === "" ? "*- " : currentText;
     lineDiv.appendChild(input);
     
-    // Ajustar altura inicial basada en el contenido
     input.style.height = '28px';
     input.style.height = input.scrollHeight + 'px';
     

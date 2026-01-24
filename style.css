@@ -222,7 +222,7 @@ body, html {
     justify-content: space-between; 
     align-items: center; 
     padding: 0 15px; 
-    background-color: #D3D3D3; 
+    background-color: #9c9c9c; 
     flex-shrink: 0; 
     position: sticky; 
     top: 0; 
@@ -249,8 +249,9 @@ body, html {
 .day-progress {
     font-family: 'Arial', sans-serif;
     font-size: 0.8rem;
-    color: #888;
+    color: #444; /* Gris oscuro para el progreso */
     margin-left: 10px;
+    font-weight: bold;
 }
 
 .date-header-line.is-today-text .day-name, 
@@ -264,21 +265,20 @@ body, html {
 .note-line {
     min-height: 28px; 
     height: auto; 
-    display: flex; 
-    align-items: flex-start; 
+    display: block; /* Cambiado a block para que el fondo cubra todo */
     padding: 0 15px;
     font-family: 'Sriracha', cursive; 
     cursor: pointer; 
     font-style: italic; 
     position: relative;
-    background-color: transparent; 
+    width: 100%;
 }
 
 .right-page .note-line { 
     padding-left: 25px; 
 }
 
-/* Tamaños de letra aplicados al contenedor padre */
+/* Tamaños de letra */
 .note-line.size-small { font-size: 14px; }
 .note-line.size-medium { font-size: 18px; }
 .note-line.size-large { font-size: 22px; }
@@ -290,21 +290,20 @@ body, html {
 .ink-green { color: #1a632e !important; }
 .ink-orange { color: #ff8000 !important; }
 
-/* RESALTADO CORREGIDO: Cubre todo el bloque */
+/* RESALTADO: Ahora es un fondo sólido que cubre TODO el contenedor */
 .note-line.highlighted {
-    background-color: rgba(255, 255, 0, 0.6) !important; 
+    background-color: #ffff00 !important; 
+    box-shadow: none;
     border-radius: 0;
 }
 
-/* Texto de la nota: Ocupa todo el espacio y hereda tamaño */
 .note-line span { 
-    flex: 1; 
-    white-space: normal; 
-    word-break: break-word; 
-    line-height: 28px; 
     display: block; 
     width: 100%;
-    font-size: inherit; /* HEREDA DEL PADRE */
+    line-height: 28px; 
+    white-space: normal; 
+    word-break: break-word; 
+    pointer-events: none; /* El clic lo captura el div padre */
 }
 
 .note-line.completed span { 
@@ -313,13 +312,16 @@ body, html {
 }
 
 .delete-btn { 
+    position: absolute;
+    right: 5px;
+    top: 0;
     color: #a32a2a; 
     font-weight: bold; 
     font-size: 1.2rem; 
-    padding: 0 10px; 
     display: none; 
     height: 28px;
     line-height: 28px;
+    z-index: 10;
 }
 
 .note-line.completed .delete-btn { 
@@ -327,10 +329,10 @@ body, html {
 }
 
 /* ==========================================
-   EDITOR: HEREDA TAMAÑO Y LÍNEA
+   EDITOR
    ========================================== */
 .note-input {
-    flex: 1; 
+    display: block;
     border: none; 
     outline: none; 
     background: transparent; 
@@ -339,8 +341,8 @@ body, html {
     color: inherit; 
     width: 100%; 
     resize: none; 
-    line-height: 28px; /* IGUAL QUE EL SPAN */
-    font-size: inherit; /* AHORA LAS LETRAS NO SERÁN PEQUEÑAS AL ESCRIBIR */
+    line-height: 28px; 
+    font-size: inherit; 
     overflow: hidden;
     padding: 0;
     margin: 0;
@@ -399,7 +401,7 @@ body, html {
 }
 
 /* ==========================================
-   ANIMACIONES DE PASO DE PÁGINA
+   ANIMACIONES
    ========================================== */
 .page-turn-forward { 
     transform: rotateY(-250deg) scale(0.95); 
@@ -416,7 +418,7 @@ body, html {
 }
 
 /* ==========================================
-   VENTANA MODAL DE AJUSTES Y RESUMEN
+   MODALES
    ========================================== */
 .modal-overlay {
     position: fixed; 
@@ -488,10 +490,6 @@ body, html {
     align-items: center;
     font-family: Piedra;
     font-style: italic;
-}
-
-.setting-item label { 
-    font-size: 0.9rem; 
 }
 
 .btn-block {
