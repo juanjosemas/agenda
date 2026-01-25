@@ -14,16 +14,19 @@ let clickTimer = null;
 let longPressTimer = null; 
 let isLongPressActive = false; 
 
+// NUEVO: Objeto para recordar la última línea tocada para el micrófono
+let lastEditedLineInfo = { key: null, index: null }; 
+let currentActiveInput = null; 
+
 const linesL = document.getElementById('lines-l');
 const linesR = document.getElementById('lines-r');
 const swipeArea = document.getElementById('swipe-area');
 const notebook = document.querySelector('.notebook-container');
 
 /**
- * Función de inicio: se ejecuta al cargar la página
+ * Función de inicio
  */
 function init() {
-    // Cargar ajustes desde el panel de configuración
     document.getElementById('setting-paper').value = settings.paper;
     document.getElementById('setting-font-size').value = settings.fontSize;
     document.getElementById('setting-view').value = settings.viewMode;
@@ -32,26 +35,16 @@ function init() {
     render();
     setupSwipe();
 
-    // CAMBIO: Abrir automáticamente la libreta después de 2 segundos (2000ms)
     setTimeout(() => {
         openNotebook();
     }, 2000);
 }
 
 /* ==========================================
-   FUNCIONES DE LA PORTADA
+   FUNCIONES DE LA PORTADA Y NAVEGACIÓN
    ========================================== */
-function openNotebook() {
-    notebook.classList.remove('is-closed');
-}
-
-function closeNotebook() {
-    notebook.classList.add('is-closed');
-}
-
-/* ==========================================
-   NAVEGACIÓN POR FECHAS
-   ========================================== */
+function openNotebook() { notebook.classList.remove('is-closed'); }
+function closeNotebook() { notebook.classList.add('is-closed'); }
 function goToToday() { offset = 0; render(); }
 
 function jumpToDate(dateString) {
@@ -72,7 +65,7 @@ function jumpToDate(dateString) {
 }
 
 /* ==========================================
-   RENDERIZADO DE LA AGENDA
+   RENDERIZADO
    ========================================== */
 function render() {
     const leftData = getDayData(offset);
@@ -89,9 +82,6 @@ function render() {
     }
 }
 
-/**
- * Dibuja las líneas de una página específica
- */
 function renderPageLines(container, data) {
     container.innerHTML = '';
     const dayTasks = db[data.key] || {};
@@ -99,7 +89,6 @@ function renderPageLines(container, data) {
     const total = Object.keys(dayTasks).length;
     const completed = Object.values(dayTasks).filter(t => t.done).length;
 
-    // Cabecera de la fecha en la página
     const headerLine = document.createElement('div');
     headerLine.className = `date-header-line ${data.isToday ? 'is-today-text' : ''}`;
     headerLine.innerHTML = `
@@ -110,7 +99,6 @@ function renderPageLines(container, data) {
         </div>`;
     container.appendChild(headerLine);
 
-    // Generar las 23 líneas de la página
     for (let i = 1; i < 24; i++) {
         const lineData = dayTasks[i] || { text: '', done: false, high: false, color: 'black' };
         const lineDiv = document.createElement('div');
@@ -122,7 +110,6 @@ function renderPageLines(container, data) {
         span.innerText = lineData.text;
         lineDiv.appendChild(span);
 
-        // Botón de eliminar (solo visible si está completada)
         const del = document.createElement('div');
         del.className = 'delete-btn'; del.innerText = '×';
         del.onclick = (e) => { 
@@ -131,7 +118,7 @@ function renderPageLines(container, data) {
         };
         lineDiv.appendChild(del);
 
-        // --- GESTIÓN DE PULSACIÓN LARGA (PARA RESALTAR) ---
+        // PULSACIÓN LARGA
         const startPress = () => {
             isLongPressActive = false;
             longPressTimer = setTimeout(() => {
@@ -145,22 +132,20 @@ function renderPageLines(container, data) {
             }, 600); 
         };
 
-        const endPress = () => {
-            clearTimeout(longPressTimer);
-        };
+        const endPress = () => clearTimeout(longPressTimer);
 
         lineDiv.onmousedown = startPress;
-        lineDiv.ontouchstart = (e) => { startPress(); };
+        lineDiv.ontouchstart = (e) => startPress();
         lineDiv.onmouseup = endPress;
         lineDiv.onmouseleave = endPress;
         lineDiv.ontouchend = endPress;
 
-        // --- GESTIÓN DE CLIC (TACHAR / EDITAR) ---
+        // CLIC
         lineDiv.onclick = (e) => {
-            if (isLongPressActive) {
-                isLongPressActive = false; 
-                return;
-            }
+            if (isLongPressActive) { isLongPressActive = false; return; }
+            
+            // Recordamos qué línea estamos tocando
+            lastEditedLineInfo = { key: data.key, index: i };
 
             if (clickTimer == null) {
                 clickTimer = setTimeout(() => {
@@ -181,18 +166,15 @@ function renderPageLines(container, data) {
 }
 
 /* ==========================================
-   EDICIÓN DE NOTAS
+   EDICIÓN
    ========================================== */
 function startEditing(lineDiv, key, index, currentText, currentColor) {
     const isHigh = (db[key] && db[key][index] && db[key][index].high);
-    
     lineDiv.innerHTML = ''; 
     let tempColor = currentColor || 'black';
 
-    // Selector de colores durante la edición
     const picker = document.createElement('div');
     picker.className = 'color-picker';
-    
     ['black', 'blue', 'red', 'green', 'orange'].forEach(col => {
         const dot = document.createElement('div');
         dot.className = `color-dot dot-${col}`;
@@ -205,12 +187,12 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
     });
     lineDiv.appendChild(picker);
 
-    // Área de texto para la nota
     const input = document.createElement('textarea');
     input.className = `note-input ink-${tempColor}`;
     input.value = currentText === "" ? "*- " : currentText;
     lineDiv.appendChild(input);
     
+    currentActiveInput = input;
     input.style.height = '28px';
     input.style.height = input.scrollHeight + 'px';
     
@@ -225,28 +207,22 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
         } else {
             db[key][index] = { text: txt, done: false, high: isHigh, color: tempColor };
         }
+        currentActiveInput = null;
         save(); render(); 
     };
 
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            input.blur();
-        }
-    };
-
-    input.oninput = () => {
-        let val = input.value;
-        // Forzar formato de viñeta "*- "
-        if (!val.startsWith("*- ")) val = "*- " + val.replace(/^[\*\-\s]*/, "");
-        // Capitalizar primera letra después de la viñeta
-        if (val.length >= 4) val = val.slice(0, 3) + val.charAt(3).toUpperCase() + val.slice(4);
-        input.value = val;
-        input.style.height = '28px'; 
-        input.style.height = input.scrollHeight + 'px';
-    };
-
+    input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } };
+    input.oninput = () => formatInput(input);
     input.onblur = saveContent;
+}
+
+function formatInput(input) {
+    let val = input.value;
+    if (!val.startsWith("*- ")) val = "*- " + val.replace(/^[\*\-\s]*/, "");
+    if (val.length >= 4) val = val.slice(0, 3) + val.charAt(3).toUpperCase() + val.slice(4);
+    input.value = val;
+    input.style.height = '28px'; 
+    input.style.height = input.scrollHeight + 'px';
 }
 
 function toggleDone(key, index) {
@@ -257,11 +233,71 @@ function toggleDone(key, index) {
 }
 
 /* ==========================================
+   VOZ (MEJORADO)
+   ========================================== */
+function startSpeechRecognition() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Tu navegador no soporta el dictado por voz.");
+        return;
+    }
+
+    // Si no hemos tocado ninguna línea nunca
+    if (!lastEditedLineInfo.key) {
+        alert("Haz clic en una línea para activarla antes de dictar.");
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.interimResults = false;
+
+    const micBtn = document.getElementById('mic-btn');
+    
+    recognition.onstart = () => micBtn.classList.add('recording');
+
+    recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        const key = lastEditedLineInfo.key;
+        const idx = lastEditedLineInfo.index;
+
+        // 1. Si el editor está abierto, escribimos en él
+        if (currentActiveInput) {
+            currentActiveInput.value += speechResult;
+            formatInput(currentActiveInput);
+        } else {
+            // 2. Si el editor se cerró por el clic en el botón, escribimos directamente en la DB
+            if (!db[key]) db[key] = {};
+            let currentText = db[key][idx] ? db[key][idx].text : "*- ";
+            let newText = currentText + " " + speechResult;
+            
+            // Limpieza básica del texto dictado (mayúscula tras punto o inicio)
+            if (newText.startsWith("*- ")) {
+                newText = "*- " + newText.substring(3).trim();
+                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
+            }
+
+            db[key][idx] = { 
+                text: newText, 
+                done: false, 
+                high: (db[key][idx] ? db[key][idx].high : false), 
+                color: (db[key][idx] ? db[key][idx].color : 'black') 
+            };
+            save(); 
+            render();
+        }
+    };
+
+    recognition.onerror = () => micBtn.classList.remove('recording');
+    recognition.onend = () => micBtn.classList.remove('recording');
+
+    recognition.start();
+}
+
+/* ==========================================
    ALMACENAMIENTO Y AJUSTES
    ========================================== */
-function save() { 
-    localStorage.setItem('agenda_v9', JSON.stringify(db)); 
-}
+function save() { localStorage.setItem('agenda_v9', JSON.stringify(db)); }
 
 function toggleSettings() {
     const m = document.getElementById('settings-modal');
@@ -287,7 +323,7 @@ function applySettings() {
 }
 
 /* ==========================================
-   UTILIDADES DE FECHA
+   FECHAS Y UTILIDADES
    ========================================== */
 function getDayData(dOffset) {
     const d = new Date(); d.setDate(d.getDate() + dOffset);
@@ -307,15 +343,11 @@ function getWeekNumber(d) {
     return Math.ceil((((d - new Date(Date.UTC(d.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7);
 }
 
-/* ==========================================
-   GESTOS (SWIPE) Y BORRADO
-   ========================================== */
 function setupSwipe() {
     let startX = 0;
     swipeArea.ontouchstart = e => startX = e.touches[0].clientX;
     swipeArea.ontouchend = e => {
         if (notebook.classList.contains('is-closed')) return;
-
         let diff = startX - e.changedTouches[0].clientX;
         if (Math.abs(diff) < 60) return;
         notebook.classList.add('notebook-turning');
@@ -336,26 +368,17 @@ function setupSwipe() {
 }
 
 function clearAllData() {
-    const confirmation = confirm("¿Estás SEGURO de que quieres borrar TODAS las notas? Esta acción no se puede deshacer.");
-    if (confirmation) {
-        db = {}; 
-        save();  
-        render(); 
-        toggleSettings(); 
-        alert("La agenda ha sido vaciada.");
+    if (confirm("¿Borrar TODAS las notas?")) {
+        db = {}; save(); render(); toggleSettings();
     }
 }
 
-/* ==========================================
-   RESUMEN / ÍNDICE DE NOTAS
-   ========================================== */
 function openSummary() {
     const container = document.getElementById('summary-list-container');
     container.innerHTML = '';
     const keys = Object.keys(db).sort();
-    
     if (keys.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding:20px;">No hay notas guardadas aún.</p>';
+        container.innerHTML = '<p>No hay notas.</p>';
     } else {
         keys.forEach(key => {
             const dayNotes = db[key];
@@ -363,8 +386,7 @@ function openSummary() {
             if (noteIndices.length > 0) {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'summary-day-item';
-                const dateObj = new Date(key + "T00:00:00");
-                const dateString = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                const dateString = new Date(key + "T00:00:00").toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
                 const header = document.createElement('div');
                 header.className = 'summary-day-header';
                 header.innerText = dateString;
@@ -386,19 +408,11 @@ function openSummary() {
     document.getElementById('summary-modal').style.display = 'flex';
 }
 
-function closeSummary() {
-    document.getElementById('summary-modal').style.display = 'none';
-}
+function closeSummary() { document.getElementById('summary-modal').style.display = 'none'; }
 
 function getInkColorCode(colorName) {
-    switch(colorName) {
-        case 'blue': return '#1a4a9e';
-        case 'red': return '#a32a2a';
-        case 'green': return '#1a632e';
-        case 'orange': return '#ff8000';
-        default: return 'inherit';
-    }
+    const colors = { 'blue': '#1a4a9e', 'red': '#a32a2a', 'green': '#1a632e', 'orange': '#ff8000' };
+    return colors[colorName] || 'inherit';
 }
 
-// Inicializar la aplicación
 init();

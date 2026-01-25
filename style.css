@@ -36,19 +36,20 @@ body, html {
     width: 100%; 
     display: flex; 
     justify-content: space-between;
-    padding: 5px 20px;
+    padding: 5px 10px; /* Reducido un poco de 20px */
     align-items: center;
 }
 
 .date-info {
     background: white; 
-    padding: 5px 12px; 
+    padding: 5px 8px; /* Reducido de 12px */
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     display: flex; 
     flex-direction: column;
     font-family: 'Piedra', serif;
     border: 2px solid black;
+    min-width: 90px;
 }
 
 #month-year { 
@@ -56,11 +57,12 @@ body, html {
     color: #333; 
     text-transform: lowercase; 
     font-style: italic;
+    font-size: 1rem;
 }
 
 #week-display { 
     color: #666; 
-    font-size: 0.8rem; 
+    font-size: 1rem; 
     font-style: italic; 
 }
 
@@ -69,15 +71,28 @@ body, html {
     align-items: center; 
 }
 
+/* AJUSTADO: Botones un poco más pequeños para que quepa el micrófono */
 .icons .icon-btn {
     background: white; 
     border: 2px solid black;
-    padding: 8px 12px; 
+    padding: 8px 10px; /* Reducido de 8px 12px */
     border-radius: 5px;
-    margin-left: 5px; 
+    margin-left: 4px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1rem; /* Reducido de 1.1rem */
+}
+
+/* Efecto cuando el micrófono está grabando */
+.icon-btn.recording {
+    background-color: #ffcccc;
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
 #date-search-input { 
