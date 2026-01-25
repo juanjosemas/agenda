@@ -78,7 +78,8 @@ function render() {
     const leftData = getDayData(offset);
     const rightData = getDayData(offset + 1);
 
-    document.getElementById('month-year').innerText = `${leftData.month}. ${leftData.year}`;
+    // El encabezado superior mantiene el mes corto para ahorrar espacio
+    document.getElementById('month-year').innerText = `${leftData.monthShort}. ${leftData.year}`;
     document.getElementById('week-display').innerText = `Semana ${leftData.week}`;
 
     if (settings.viewMode === 'single') {
@@ -98,10 +99,12 @@ function renderPageLines(container, data) {
 
     const headerLine = document.createElement('div');
     headerLine.className = `date-header-line ${data.isToday ? 'is-today-text' : ''}`;
+    // CAMBIO: Se usa la clase 'day-month' para el mes para poder darle el margen en el CSS
     headerLine.innerHTML = `
         <div>
             <span class="day-name">${data.name}</span>
             <span class="day-num">${data.num}</span>
+            <span class="day-month">${data.month}</span>
             ${total > 0 ? `<span class="day-progress">(${completed}/${total})</span>` : ''}
         </div>`;
     container.appendChild(headerLine);
@@ -386,7 +389,8 @@ function getDayData(dOffset) {
     return {
         key: key, num: d.getDate(),
         name: d.toLocaleDateString('es-ES', { weekday: 'long' }),
-        month: d.toLocaleDateString('es-ES', { month: 'short' }),
+        month: d.toLocaleDateString('es-ES', { month: 'long' }), 
+        monthShort: d.toLocaleDateString('es-ES', { month: 'short' }), 
         year: d.getFullYear(), isToday: key === new Date().toISOString().split('T')[0],
         week: getWeekNumber(d)
     };
