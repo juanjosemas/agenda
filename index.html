@@ -18,8 +18,9 @@
             <div class="icons">         
                 <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
                 <button class="icon-btn" onclick="document.getElementById('date-search-input').showPicker()" title="Buscar Fecha">🔍</button>
-                <!-- NUEVO: Botón de Micrófono -->
                 <button class="icon-btn" id="mic-btn" onclick="startSpeechRecognition()" title="Dictar Nota">🎤</button>
+                <!-- NUEVO: Botón de Bolsillo (Pósit) -->
+                <button class="icon-btn" onclick="openPocket()" title="Notas de Bolsillo">📌</button>
                 <button class="icon-btn" onclick="openSummary()" title="Ver todas las notas">📋</button>
                 <button class="icon-btn" onclick="goToToday()" title="Ir a Hoy">📅</button>
                 <button class="icon-btn" onclick="toggleSettings()" title="Ajustes">⚙️</button>
@@ -28,10 +29,10 @@
 
         <div class="notebook-container is-closed" id="swipe-area">
             
-            <!-- PORTADA DE LA LIBRETA -->
-            <div class="notebook-cover" onclick="openNotebook()">
+            <!-- PORTADA DE LA LIBRETA (Modificada para personalización) -->
+            <div class="notebook-cover" id="notebook-cover" onclick="openNotebook()">
                 <div class="cover-decoration"></div>
-                <h1>AGENDA</h1>
+                <h1 id="cover-title">AGENDA</h1>
                 <p>Mi Plan Semanal</p>
                 <div class="cover-decoration"></div>
                 <small style="color:rgba(255,215,0,0.5); font-style:italic;">Clic para abrir</small>
@@ -61,6 +62,22 @@
             <h3>Ajustes de Agenda</h3>
             
             <div class="setting-item">
+                <label>Tu Nombre:</label>
+                <input type="text" id="setting-name" oninput="applySettings()" placeholder="Ej: Juan">
+            </div>
+
+            <div class="setting-item">
+                <label>Color Portada:</label>
+                <select id="setting-cover-color" onchange="applySettings()">
+                    <option value="brown">Marrón Cuero</option>
+                    <option value="blue">Azul Marino</option>
+                    <option value="green">Verde Bosque</option>
+                    <option value="black">Negro Elegante</option>
+                    <option value="red">Rojo Vino</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
                 <label>Vista:</label>
                 <select id="setting-view" onchange="applySettings()">
                     <option value="double">Abierta (2 días)</option>
@@ -87,12 +104,29 @@
             </div>
 
             <hr>
+            <h4>Copia de Seguridad</h4>
+            <div class="backup-btns">
+                <button class="btn-backup" onclick="exportData()">📤 Exportar</button>
+                <button class="btn-backup" onclick="document.getElementById('import-file').click()">📥 Importar</button>
+                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+            </div>
+
+            <hr>
             <h4>Acciones</h4>
             <button class="btn-block" onclick="closeNotebook(); toggleSettings();">📕 Cerrar Libreta</button>
-            
             <button class="btn-block" style="color: #a32a2a; font-weight: bold; margin-top: 10px;" onclick="clearAllData()">⚠️ Borrar toda la agenda</button>
-
             <button class="btn-block" style="background:#333; color:white; margin-top:20px" onclick="toggleSettings()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- NUEVO: MODAL DE BOLSILLO (NOTAS RÁPIDAS) -->
+    <div id="pocket-modal" class="modal-overlay">
+        <div class="modal-content pocket-style">
+            <div class="pocket-pin">📌</div>
+            <h3>Notas de Bolsillo</h3>
+            <p style="font-size: 0.8rem; margin-top: -10px; opacity: 0.7;">Ideas y listas que no caducan</p>
+            <textarea id="pocket-textarea" placeholder="Escribe aquí tus notas generales..." oninput="savePocketData()"></textarea>
+            <button class="btn-block" style="background:rgba(0,0,0,0.1); border:none; margin-top:10px" onclick="closePocket()">Guardar y Cerrar</button>
         </div>
     </div>
 

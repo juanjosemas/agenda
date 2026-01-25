@@ -1,8 +1,9 @@
 /* ==========================================
-   RESET Y CONFIGURACIÓN BÁSICA
+   1. RESET Y CONFIGURACIÓN BÁSICA
    ========================================== */
 * { 
     box-sizing: border-box; 
+    /* Evita el recuadro azul al tocar botones en móviles */
     -webkit-tap-highlight-color: transparent; 
 }
 
@@ -11,12 +12,13 @@ body, html {
     padding: 0; 
     height: 100%;
     font-family: 'Arial', sans-serif;
+    /* Evita el scroll global para que la libreta sea fija */
     overflow: hidden; 
     background-color: #333; 
 }
 
 /* ==========================================
-   CONTENEDOR PRINCIPAL (MESA DE MADERA)
+   2. CONTENEDOR PRINCIPAL (MESA DE MADERA)
    ========================================== */
 .wood-background {
     background-color: #c4a484; 
@@ -25,24 +27,25 @@ body, html {
     display: flex; 
     flex-direction: column; 
     align-items: center;
+    /* Crea el efecto de profundidad 3D para la apertura */
     perspective: 2000px; 
     transition: background-color 0.5s ease;
 }
 
 /* ==========================================
-   BARRA SUPERIOR (CABECERA)
+   3. BARRA SUPERIOR (CABECERA)
    ========================================== */
 .top-bar {
     width: 100%; 
     display: flex; 
     justify-content: space-between;
-    padding: 5px 10px; /* Reducido un poco de 20px */
+    padding: 5px 10px;
     align-items: center;
 }
 
 .date-info {
     background: white; 
-    padding: 5px 8px; /* Reducido de 12px */
+    padding: 5px 8px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     display: flex; 
@@ -71,19 +74,18 @@ body, html {
     align-items: center; 
 }
 
-/* AJUSTADO: Botones un poco más pequeños para que quepa el micrófono */
 .icons .icon-btn {
     background: white; 
     border: 2px solid black;
-    padding: 10px 10px; /* Reducido de 8px 12px */
+    padding: 8px 8px;
     border-radius: 5px;
     margin-left: 4px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     cursor: pointer;
-    font-size: 1rem; /* Reducido de 1.1rem */
+    font-size: 1rem;
 }
 
-/* Efecto cuando el micrófono está grabando */
+/* Efecto visual cuando el micrófono está activo */
 .icon-btn.recording {
     background-color: #ffcccc;
     animation: pulse-red 1s infinite;
@@ -95,6 +97,7 @@ body, html {
     100% { transform: scale(1); }
 }
 
+/* Ocultar el input de fecha nativo pero mantenerlo funcional */
 #date-search-input { 
     position: absolute; 
     opacity: 0; 
@@ -104,19 +107,21 @@ body, html {
 }
 
 /* ==========================================
-   CONTENEDOR DE LA LIBRETA
+   4. CONTENEDOR DE LA LIBRETA
    ========================================== */
 .notebook-container {
     display: flex; 
     width: 96%; 
     height: 92vh; 
     margin-top: 2px;
+    /* Permite que los hijos se muevan en el espacio 3D */
     transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), 
+                width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
     position: relative;
 }
 
-/* Estado de la libreta cerrada */
+/* Estilo cuando la libreta está en la mesa antes de abrirse */
 .notebook-container.is-closed {
     width: 85%; 
     max-width: 600px; 
@@ -124,13 +129,12 @@ body, html {
 }
 
 /* ==========================================
-   PORTADA DE LA LIBRETA
+   5. PORTADA Y PERSONALIZACIÓN DE COLORES
    ========================================== */
 .notebook-cover {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: #5d4037; 
     border-radius: 0 12px 12px 0;
     z-index: 50;
     display: flex;
@@ -138,24 +142,36 @@ body, html {
     justify-content: center;
     align-items: center;
     box-shadow: 15px 10px 30px rgba(0,0,0,0.6); 
+    /* El eje de rotación es el borde izquierdo (el lomo) */
     transform-origin: left;
-    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1), 
+                background-color 0.5s;
+    /* Oculta la parte trasera de la portada al girar */
     backface-visibility: hidden;
-    border: 3px solid #3e2723;
+    border: 3px solid rgba(0,0,0,0.2);
 }
+
+/* Clases dinámicas que se aplican desde JS según ajustes */
+.cover-brown { background-color: #5d4037; }
+.cover-blue  { background-color: #1a237e; }
+.cover-green { background-color: #1b5e20; }
+.cover-black { background-color: #212121; }
+.cover-red   { background-color: #b71c1c; }
 
 .notebook-cover h1 {
     font-family: 'Piedra', serif;
     color: white;
-    font-size: 4rem; 
+    font-size: 3.5rem; 
     text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
     margin: 0;
+    text-align: center;
+    padding: 0 20px;
 }
 
 .notebook-cover p {
     font-family: Yellowtail;
     color: rgba(255,215,0,0.7);
-    letter-spacing: 8px; 
+    letter-spacing: 5px; 
     text-transform: uppercase;
     font-size: 1.1rem;
     margin-top: 15px;
@@ -168,14 +184,14 @@ body, html {
     margin: 30px 0;
 }
 
-/* Animación de apertura */
+/* Girar la portada cuando la libreta no tiene la clase is-closed */
 .notebook-container:not(.is-closed) .notebook-cover {
     transform: rotateY(-180deg);
     pointer-events: none; 
 }
 
 /* ==========================================
-   ESTILO DE LAS PÁGINAS
+   6. ESTILO DE LAS PÁGINAS (INTERIOR)
    ========================================== */
 .page {
     flex: 1; 
@@ -190,19 +206,20 @@ body, html {
     z-index: 2;
 }
 
-/* Visibilidad cuando está cerrada */
+/* Ocultar la página izquierda y espiral cuando está cerrada */
 .notebook-container.is-closed .left-page,
 .notebook-container.is-closed .spiral {
     opacity: 0;
     pointer-events: none;
 }
 
-/* Texturas de papel */
+/* Textura Rayada: Líneas horizontales cada 28px */
 .page.paper-ruled { 
     background-image: linear-gradient(transparent 27px, #c0c0c0 1px); 
     background-size: 100% 28px; 
 }
 
+/* Textura Cuadriculada */
 .page.paper-grid { 
     background-image: 
         linear-gradient(#c0c0c0 1px, transparent 1px), 
@@ -221,7 +238,7 @@ body, html {
 }
 
 /* ==========================================
-   CONTENIDO INTERIOR (LÍNEAS Y PROGRESO)
+   7. CONTENIDO DE LAS LÍNEAS
    ========================================== */
 .lines-container { 
     display: flex; 
@@ -261,12 +278,12 @@ body, html {
     margin-left: 5px; 
 }
 
-.day-progress {
-    font-family: 'Arial', sans-serif;
-    font-size: 0.8rem;
+.day-progress { 
+    font-family: 'Arial', sans-serif; 
+    font-size: 0.8rem; 
     color: #444; 
-    margin-left: 10px;
-    font-weight: bold;
+    margin-left: 10px; 
+    font-weight: bold; 
 }
 
 .date-header-line.is-today-text .day-name, 
@@ -274,20 +291,16 @@ body, html {
     color: #a32a2a; 
 }
 
-/* ==========================================
-   COLORES DE TINTA Y RESALTADO
-   ========================================== */
 .note-line {
     min-height: 28px; 
     height: auto; 
     display: flex; 
-    flex-direction: row;
     align-items: flex-start;
-    padding: 0 15px;
+    padding: 0 15px; 
     font-family: 'Sriracha', cursive; 
     cursor: pointer; 
     font-style: italic; 
-    position: relative;
+    position: relative; 
     width: 100%;
 }
 
@@ -295,33 +308,33 @@ body, html {
     padding-left: 25px; 
 }
 
-/* Tamaños de letra */
+/* Tamaños de letra configurables */
 .note-line.size-small { font-size: 14px; }
 .note-line.size-medium { font-size: 18px; }
 .note-line.size-large { font-size: 22px; }
 
-/* TINTAS */
+/* Colores de Tinta */
 .ink-black { color: #222 !important; }
 .ink-blue { color: #1a4a9e !important; }
 .ink-red { color: #a32a2a !important; }
 .ink-green { color: #1a632e !important; }
 .ink-orange { color: #ff8000 !important; }
 
-/* RESALTADO DEFINITIVO: Usa un pseudoelemento para cubrir todo el bloque */
+/* Efecto de resaltador amarillo */
 .note-line.highlighted::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    content: ""; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
     height: 100%;
-    background-color: rgba(255, 255, 0, 0.8) !important;
+    background-color: rgba(255, 255, 0, 0.8) !important; 
     z-index: 0;
 }
 
 .note-line span { 
-    position: relative; /* Para quedar por encima del resaltado */
-    z-index: 1;
+    position: relative; 
+    z-index: 1; 
     flex: 1; 
     white-space: normal; 
     word-break: break-word; 
@@ -335,14 +348,14 @@ body, html {
 }
 
 .delete-btn { 
-    position: relative;
-    z-index: 2;
+    position: relative; 
+    z-index: 2; 
     color: #a32a2a; 
     font-weight: bold; 
-    font-size: 1.2rem; 
-    padding: 0 10px; 
+    font-size: 1.1rem; 
+    padding: 0 6px; 
     display: none; 
-    height: 28px;
+    height: 28px; 
     line-height: 28px;
 }
 
@@ -351,7 +364,7 @@ body, html {
 }
 
 /* ==========================================
-   EDITOR
+   8. EDITOR DE TEXTO (TEXTAREA DINÁMICO)
    ========================================== */
 .note-input {
     flex: 1; 
@@ -365,37 +378,37 @@ body, html {
     resize: none; 
     line-height: 28px; 
     font-size: inherit; 
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    position: relative;
+    overflow: hidden; 
+    padding: 0; 
+    margin: 0; 
+    position: relative; 
     z-index: 5;
 }
 
+/* Burbuja flotante para elegir color de tinta */
 .color-picker {
-    position: absolute;
-    right: 15px;
-    top: -22px;
-    display: flex;
+    position: absolute; 
+    right: 15px; 
+    top: -22px; 
+    display: flex; 
     gap: 8px;
-    background: white;
-    padding: 5px 10px;
+    background: white; 
+    padding: 5px 10px; 
     border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
     z-index: 100;
 }
 
-.color-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+.color-dot { 
+    width: 16px; 
+    height: 16px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    border: 1px solid rgba(0,0,0,0.1); 
+    transition: transform 0.2s; 
 }
 
 .color-dot:hover { transform: scale(1.2); }
-
 .dot-black { background-color: #222; }
 .dot-blue  { background-color: #1a4a9e; }
 .dot-red   { background-color: #a32a2a; }
@@ -403,7 +416,7 @@ body, html {
 .dot-orange { background-color: #ff8000; }
 
 /* ==========================================
-   ESPIRAL Y ANILLAS
+   9. ESPIRAL METÁLICO CENTRAL
    ========================================== */
 .spiral {
     width: 25px; 
@@ -413,7 +426,7 @@ body, html {
     flex-direction: column; 
     align-items: center; 
     justify-content: space-around; 
-    box-shadow: inset 0 0 10px #000;
+    box-shadow: inset 0 0 10px #000; 
     transition: opacity 0.5s;
 }
 
@@ -425,24 +438,7 @@ body, html {
 }
 
 /* ==========================================
-   ANIMACIONES
-   ========================================== */
-.page-turn-forward { 
-    transform: rotateY(-250deg) scale(0.95); 
-    opacity: 0; 
-}
-
-.page-turn-backward { 
-    transform: rotateY(250deg) scale(0.95); 
-    opacity: 0; 
-}
-
-.notebook-turning { 
-    transform: translateZ(-100px); 
-}
-
-/* ==========================================
-   MODALES
+   10. MODALES (GENERALES)
    ========================================== */
 .modal-overlay {
     position: fixed; 
@@ -462,73 +458,138 @@ body, html {
     padding: 25px; 
     border-radius: 12px; 
     width: 90%; 
-    max-width: 400px;
+    max-width: 400px; 
     box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
     text-align: center; 
     font-family: 'Piedra', serif;
 }
 
-.modal-content.wide {
-    max-width: 600px;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.summary-list {
-    text-align: left;
-    overflow-y: auto;
-    margin-top: 15px;
-    padding-right: 10px;
-    font-family: 'Arial', sans-serif;
-}
-
-.summary-day-item {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.summary-day-header {
-    font-family: 'Lobster', cursive;
-    color: #a32a2a;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: inline-block;
-}
-
-.summary-day-header:hover { text-decoration: underline; }
-
-.summary-note {
-    font-family: 'Sriracha', cursive;
-    font-size: 0.9rem;
-    margin: 5px 0 5px 15px;
-    color: #555;
+/* ==========================================
+   11. NOTAS DE BOLSILLO (ESTILO PÓSIT)
+   ========================================== */
+.pocket-style {
+    background-color: #fff9c4; /* Color amarillento de pósit */
+    border-left: 2px solid #fbc02d;
+    font-family: Piedra;
     font-style: italic;
+    position: relative;
+    max-width: 350px;
 }
 
+.pocket-pin {
+    position: absolute; 
+    top: -10px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+}
+
+#pocket-textarea {
+    width: 100%; 
+    height: 250px; 
+    border: none; 
+    background: transparent;
+    font-family: Caveat; 
+    font-size: 1.4rem; 
+    outline: none;
+    resize: none; 
+    color: #333; 
+    line-height: 1.4;
+}
+
+/* ==========================================
+   12. RESUMEN / ÍNDICE DE NOTAS
+   ========================================== */
+.modal-content.wide { 
+    max-width: 600px; 
+    max-height: 85vh; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.summary-list { 
+    text-align: left; 
+    overflow-y: auto; 
+    margin-top: 15px; 
+    padding-right: 10px; 
+    font-family: 'Arial', sans-serif; 
+}
+
+.summary-day-item { 
+    margin-bottom: 20px; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 10px; 
+}
+
+.summary-day-header { 
+    font-family: Lobster; 
+    color: #a32a2a; 
+    font-size: 1.2rem; 
+    cursor: pointer; 
+    display: inline-block; 
+}
+
+.summary-note { 
+    font-family: Sriracha; 
+    font-size: 0.9rem; 
+    margin: 5px 0 5px 15px; 
+    color: #555; 
+    font-style: italic; 
+}
+
+/* ==========================================
+   13. ELEMENTOS DEL PANEL DE AJUSTES
+   ========================================== */
 .setting-item { 
     margin-bottom: 15px; 
     display: flex; 
     justify-content: space-between; 
-    align-items: center;
-    font-family: Piedra;
-    font-style: italic;
+    align-items: center; 
+    font-family: Piedra; 
+    font-style: italic; 
 }
 
-.btn-block {
+.setting-item input { 
+    padding: 5px; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+    font-family: Piedra; 
+    width: 60%; 
+}
+
+.btn-block { 
     width: 100%; 
     padding: 10px; 
     margin-top: 10px; 
     border-radius: 5px; 
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; 
     background: #f9f9f9; 
     cursor: pointer; 
-    font-family: 'Arial', sans-serif; 
-    font-size: 0.8rem;
+    font-size: 0.8rem; 
+    font-family: Lobster;
 }
 
-/* VISTA SIMPLE */
+.backup-btns { 
+    display: flex; 
+    justify-content: space-between; 
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+.btn-backup { 
+    flex: 1; 
+    padding: 8px; 
+    font-size: 0.8rem; 
+    cursor: pointer; 
+    border-radius: 5px; 
+    border: 1px solid #ccc; 
+    background: #fff; 
+    font-family: Lobster;
+}
+
+/* ==========================================
+   14. VISTA SIMPLE (MÓVILES / 1 DÍA)
+   ========================================== */
 body.view-single .left-page { 
     display: none; 
 }
@@ -538,11 +599,28 @@ body.view-single .notebook-container {
     max-width: 500px; 
 }
 
-body.view-single .notebook-container.is-closed {
+body.view-single .notebook-container.is-closed { 
     width: 80%; 
 }
 
 body.view-single .right-page { 
     border-radius: 0 12px 12px 0; 
     transform-origin: left center; 
+}
+
+/* ==========================================
+   15. ANIMACIONES DE PASAR PÁGINA
+   ========================================== */
+.page-turn-forward { 
+    transform: rotateY(-250deg) scale(0.95); 
+    opacity: 0; 
+}
+
+.page-turn-backward { 
+    transform: rotateY(250deg) scale(0.95); 
+    opacity: 0; 
+}
+
+.notebook-turning { 
+    transform: translateZ(-100px); 
 }

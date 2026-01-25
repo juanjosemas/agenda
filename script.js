@@ -4,17 +4,20 @@
 let offset = 0; 
 let db = JSON.parse(localStorage.getItem('agenda_v9')) || {};
 
+// Actualizamos ajustes con nuevas propiedades: nombre, color portada y contenido bolsillo
 let settings = JSON.parse(localStorage.getItem('agenda_settings')) || {
     paper: 'plain',
     fontSize: 'medium',
-    viewMode: 'double'
+    viewMode: 'double',
+    ownerName: '',
+    coverColor: 'brown',
+    pocketNotes: ''
 };
 
 let clickTimer = null; 
 let longPressTimer = null; 
 let isLongPressActive = false; 
 
-// NUEVO: Objeto para recordar la última línea tocada para el micrófono
 let lastEditedLineInfo = { key: null, index: null }; 
 let currentActiveInput = null; 
 
@@ -27,9 +30,13 @@ const notebook = document.querySelector('.notebook-container');
  * Función de inicio
  */
 function init() {
+    // Cargar valores en el panel de ajustes
     document.getElementById('setting-paper').value = settings.paper;
     document.getElementById('setting-font-size').value = settings.fontSize;
     document.getElementById('setting-view').value = settings.viewMode;
+    document.getElementById('setting-name').value = settings.ownerName || '';
+    document.getElementById('setting-cover-color').value = settings.coverColor || 'brown';
+    document.getElementById('pocket-textarea').value = settings.pocketNotes || '';
 
     applySettings(); 
     render();
@@ -143,8 +150,6 @@ function renderPageLines(container, data) {
         // CLIC
         lineDiv.onclick = (e) => {
             if (isLongPressActive) { isLongPressActive = false; return; }
-            
-            // Recordamos qué línea estamos tocando
             lastEditedLineInfo = { key: data.key, index: i };
 
             if (clickTimer == null) {
@@ -233,7 +238,7 @@ function toggleDone(key, index) {
 }
 
 /* ==========================================
-   VOZ (MEJORADO Y CORREGIDO MAYÚSCULAS)
+   VOZ
    ========================================== */
 function startSpeechRecognition() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -246,13 +251,12 @@ function startSpeechRecognition() {
         return;
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.Recognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'es-ES';
     recognition.interimResults = false;
 
     const micBtn = document.getElementById('mic-btn');
-    
     recognition.onstart = () => micBtn.classList.add('recording');
 
     recognition.onresult = (event) => {
@@ -261,38 +265,25 @@ function startSpeechRecognition() {
         const idx = lastEditedLineInfo.index;
 
         if (currentActiveInput) {
-            // Si el editor está abierto, añadimos el texto y formateamos
             currentActiveInput.value += " " + speechResult;
             formatInput(currentActiveInput);
         } else {
-            // Si el editor está cerrado, manipulamos la base de datos directamente
             if (!db[key]) db[key] = {};
             let currentText = db[key][idx] ? db[key][idx].text : "*- ";
-            
             let newText;
             if (currentText === "*- " || currentText === "") {
-                // Si la nota está vacía, ponemos en mayúscula la primera letra del dictado
                 let formattedSpeech = speechResult.charAt(0).toUpperCase() + speechResult.slice(1);
                 newText = "*- " + formattedSpeech;
             } else {
-                // Si ya había texto, simplemente lo concatenamos con un espacio
                 newText = currentText + " " + speechResult;
             }
-
-            db[key][idx] = { 
-                text: newText, 
-                done: false, 
-                high: (db[key][idx] ? db[key][idx].high : false), 
-                color: (db[key][idx] ? db[key][idx].color : 'black') 
-            };
-            save(); 
-            render();
+            db[key][idx] = { text: newText, done: false, high: (db[key][idx] ? db[key][idx].high : false), color: (db[key][idx] ? db[key][idx].color : 'black') };
+            save(); render();
         }
     };
 
     recognition.onerror = () => micBtn.classList.remove('recording');
     recognition.onend = () => micBtn.classList.remove('recording');
-
     recognition.start();
 }
 
@@ -307,11 +298,27 @@ function toggleSettings() {
 }
 
 function applySettings() {
+    // Capturar valores
     settings.paper = document.getElementById('setting-paper').value;
     settings.fontSize = document.getElementById('setting-font-size').value;
     settings.viewMode = document.getElementById('setting-view').value;
+    settings.ownerName = document.getElementById('setting-name').value;
+    settings.coverColor = document.getElementById('setting-cover-color').value;
+    
     localStorage.setItem('agenda_settings', JSON.stringify(settings));
 
+    // Aplicar personalización de portada
+    const cover = document.getElementById('notebook-cover');
+    const title = document.getElementById('cover-title');
+    
+    // Limpiar clases de color anteriores y poner la nueva
+    cover.classList.remove('cover-brown', 'cover-blue', 'cover-green', 'cover-black', 'cover-red');
+    cover.classList.add(`cover-${settings.coverColor}`);
+    
+    // Aplicar nombre
+    title.innerText = settings.ownerName.trim() === "" ? "AGENDA" : `AGENDA DE ${settings.ownerName.toUpperCase()}`;
+
+    // Otros ajustes
     if (settings.viewMode === 'single') document.body.classList.add('view-single');
     else document.body.classList.remove('view-single');
 
@@ -322,6 +329,52 @@ function applySettings() {
         if (settings.paper === 'grid') p.classList.add('paper-grid');
     });
     render(); 
+}
+
+/* ==========================================
+   BOLSILLO (NOTAS RÁPIDAS)
+   ========================================== */
+function openPocket() {
+    document.getElementById('pocket-modal').style.display = 'flex';
+}
+
+function closePocket() {
+    document.getElementById('pocket-modal').style.display = 'none';
+}
+
+function savePocketData() {
+    settings.pocketNotes = document.getElementById('pocket-textarea').value;
+    localStorage.setItem('agenda_settings', JSON.stringify(settings));
+}
+
+/* ==========================================
+   EXPORTAR / IMPORTAR
+   ========================================== */
+function exportData() {
+    const dataStr = JSON.stringify(db, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `agenda_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const importedDb = JSON.parse(e.target.result);
+            if (confirm("¿Sobrescribir tus notas actuales?")) {
+                db = importedDb;
+                save(); render(); alert("Importado con éxito.");
+            }
+        } catch (err) { alert("Archivo no válido."); }
+    };
+    reader.readAsText(file);
 }
 
 /* ==========================================
@@ -370,9 +423,7 @@ function setupSwipe() {
 }
 
 function clearAllData() {
-    if (confirm("¿Borrar TODAS las notas?")) {
-        db = {}; save(); render(); toggleSettings();
-    }
+    if (confirm("¿Borrar TODAS las notas?")) { db = {}; save(); render(); toggleSettings(); }
 }
 
 function openSummary() {
