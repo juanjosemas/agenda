@@ -233,7 +233,7 @@ function toggleDone(key, index) {
 }
 
 /* ==========================================
-   VOZ (MEJORADO)
+   VOZ (MEJORADO Y CORREGIDO MAYÚSCULAS)
    ========================================== */
 function startSpeechRecognition() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -241,7 +241,6 @@ function startSpeechRecognition() {
         return;
     }
 
-    // Si no hemos tocado ninguna línea nunca
     if (!lastEditedLineInfo.key) {
         alert("Haz clic en una línea para activarla antes de dictar.");
         return;
@@ -257,24 +256,27 @@ function startSpeechRecognition() {
     recognition.onstart = () => micBtn.classList.add('recording');
 
     recognition.onresult = (event) => {
-        const speechResult = event.results[0][0].transcript;
+        let speechResult = event.results[0][0].transcript.trim();
         const key = lastEditedLineInfo.key;
         const idx = lastEditedLineInfo.index;
 
-        // 1. Si el editor está abierto, escribimos en él
         if (currentActiveInput) {
-            currentActiveInput.value += speechResult;
+            // Si el editor está abierto, añadimos el texto y formateamos
+            currentActiveInput.value += " " + speechResult;
             formatInput(currentActiveInput);
         } else {
-            // 2. Si el editor se cerró por el clic en el botón, escribimos directamente en la DB
+            // Si el editor está cerrado, manipulamos la base de datos directamente
             if (!db[key]) db[key] = {};
             let currentText = db[key][idx] ? db[key][idx].text : "*- ";
-            let newText = currentText + " " + speechResult;
             
-            // Limpieza básica del texto dictado (mayúscula tras punto o inicio)
-            if (newText.startsWith("*- ")) {
-                newText = "*- " + newText.substring(3).trim();
-                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
+            let newText;
+            if (currentText === "*- " || currentText === "") {
+                // Si la nota está vacía, ponemos en mayúscula la primera letra del dictado
+                let formattedSpeech = speechResult.charAt(0).toUpperCase() + speechResult.slice(1);
+                newText = "*- " + formattedSpeech;
+            } else {
+                // Si ya había texto, simplemente lo concatenamos con un espacio
+                newText = currentText + " " + speechResult;
             }
 
             db[key][idx] = { 
