@@ -249,7 +249,7 @@ body, html {
 .day-progress {
     font-family: 'Arial', sans-serif;
     font-size: 0.8rem;
-    color: #444; /* Gris oscuro para el progreso */
+    color: #444; 
     margin-left: 10px;
     font-weight: bold;
 }
@@ -265,7 +265,9 @@ body, html {
 .note-line {
     min-height: 28px; 
     height: auto; 
-    display: block; /* Cambiado a block para que el fondo cubra todo */
+    display: flex; 
+    flex-direction: row;
+    align-items: flex-start;
     padding: 0 15px;
     font-family: 'Sriracha', cursive; 
     cursor: pointer; 
@@ -290,20 +292,26 @@ body, html {
 .ink-green { color: #1a632e !important; }
 .ink-orange { color: #ff8000 !important; }
 
-/* RESALTADO: Ahora es un fondo sólido que cubre TODO el contenedor */
-.note-line.highlighted {
-    background-color: #ffff00 !important; 
-    box-shadow: none;
-    border-radius: 0;
+/* RESALTADO DEFINITIVO: Usa un pseudoelemento para cubrir todo el bloque */
+.note-line.highlighted::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 0, 0.8) !important;
+    z-index: 0;
 }
 
 .note-line span { 
-    display: block; 
-    width: 100%;
-    line-height: 28px; 
+    position: relative; /* Para quedar por encima del resaltado */
+    z-index: 1;
+    flex: 1; 
     white-space: normal; 
     word-break: break-word; 
-    pointer-events: none; /* El clic lo captura el div padre */
+    line-height: 28px; 
+    display: block; 
 }
 
 .note-line.completed span { 
@@ -312,16 +320,15 @@ body, html {
 }
 
 .delete-btn { 
-    position: absolute;
-    right: 5px;
-    top: 0;
+    position: relative;
+    z-index: 2;
     color: #a32a2a; 
     font-weight: bold; 
     font-size: 1.2rem; 
+    padding: 0 10px; 
     display: none; 
     height: 28px;
     line-height: 28px;
-    z-index: 10;
 }
 
 .note-line.completed .delete-btn { 
@@ -332,7 +339,7 @@ body, html {
    EDITOR
    ========================================== */
 .note-input {
-    display: block;
+    flex: 1; 
     border: none; 
     outline: none; 
     background: transparent; 
@@ -346,6 +353,8 @@ body, html {
     overflow: hidden;
     padding: 0;
     margin: 0;
+    position: relative;
+    z-index: 5;
 }
 
 .color-picker {

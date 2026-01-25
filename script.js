@@ -1,3 +1,6 @@
+/* ==========================================
+   CONFIGURACIÓN INICIAL Y VARIABLES GLOBALES
+   ========================================== */
 let offset = 0; 
 let db = JSON.parse(localStorage.getItem('agenda_v9')) || {};
 
@@ -16,7 +19,11 @@ const linesR = document.getElementById('lines-r');
 const swipeArea = document.getElementById('swipe-area');
 const notebook = document.querySelector('.notebook-container');
 
+/**
+ * Función de inicio: se ejecuta al cargar la página
+ */
 function init() {
+    // Cargar ajustes desde el panel de configuración
     document.getElementById('setting-paper').value = settings.paper;
     document.getElementById('setting-font-size').value = settings.fontSize;
     document.getElementById('setting-view').value = settings.viewMode;
@@ -24,9 +31,16 @@ function init() {
     applySettings(); 
     render();
     setupSwipe();
+
+    // CAMBIO: Abrir automáticamente la libreta después de 2 segundos (2000ms)
+    setTimeout(() => {
+        openNotebook();
+    }, 2000);
 }
 
-/* FUNCIONES DE LA PORTADA */
+/* ==========================================
+   FUNCIONES DE LA PORTADA
+   ========================================== */
 function openNotebook() {
     notebook.classList.remove('is-closed');
 }
@@ -35,6 +49,9 @@ function closeNotebook() {
     notebook.classList.add('is-closed');
 }
 
+/* ==========================================
+   NAVEGACIÓN POR FECHAS
+   ========================================== */
 function goToToday() { offset = 0; render(); }
 
 function jumpToDate(dateString) {
@@ -54,6 +71,9 @@ function jumpToDate(dateString) {
     openNotebook(); 
 }
 
+/* ==========================================
+   RENDERIZADO DE LA AGENDA
+   ========================================== */
 function render() {
     const leftData = getDayData(offset);
     const rightData = getDayData(offset + 1);
@@ -69,6 +89,9 @@ function render() {
     }
 }
 
+/**
+ * Dibuja las líneas de una página específica
+ */
 function renderPageLines(container, data) {
     container.innerHTML = '';
     const dayTasks = db[data.key] || {};
@@ -76,6 +99,7 @@ function renderPageLines(container, data) {
     const total = Object.keys(dayTasks).length;
     const completed = Object.values(dayTasks).filter(t => t.done).length;
 
+    // Cabecera de la fecha en la página
     const headerLine = document.createElement('div');
     headerLine.className = `date-header-line ${data.isToday ? 'is-today-text' : ''}`;
     headerLine.innerHTML = `
@@ -86,6 +110,7 @@ function renderPageLines(container, data) {
         </div>`;
     container.appendChild(headerLine);
 
+    // Generar las 23 líneas de la página
     for (let i = 1; i < 24; i++) {
         const lineData = dayTasks[i] || { text: '', done: false, high: false, color: 'black' };
         const lineDiv = document.createElement('div');
@@ -97,6 +122,7 @@ function renderPageLines(container, data) {
         span.innerText = lineData.text;
         lineDiv.appendChild(span);
 
+        // Botón de eliminar (solo visible si está completada)
         const del = document.createElement('div');
         del.className = 'delete-btn'; del.innerText = '×';
         del.onclick = (e) => { 
@@ -105,18 +131,18 @@ function renderPageLines(container, data) {
         };
         lineDiv.appendChild(del);
 
-        // --- GESTIÓN DE PULSACIÓN LARGA ---
+        // --- GESTIÓN DE PULSACIÓN LARGA (PARA RESALTAR) ---
         const startPress = () => {
             isLongPressActive = false;
             longPressTimer = setTimeout(() => {
                 if(lineData.text !== "") {
                     isLongPressActive = true;
                     if (!db[data.key]) db[data.key] = {};
-                    db[data.key][i].high = !db[data.key][i].high; // Interruptor ON/OFF
+                    db[data.key][i].high = !db[data.key][i].high;
                     save(); 
                     render();
                 }
-            }, 600); // Tiempo para detectar pulsación larga
+            }, 600); 
         };
 
         const endPress = () => {
@@ -124,16 +150,15 @@ function renderPageLines(container, data) {
         };
 
         lineDiv.onmousedown = startPress;
-        lineDiv.ontouchstart = startPress;
-        
+        lineDiv.ontouchstart = (e) => { startPress(); };
         lineDiv.onmouseup = endPress;
         lineDiv.onmouseleave = endPress;
         lineDiv.ontouchend = endPress;
 
-        // --- GESTIÓN DE CLIC ---
+        // --- GESTIÓN DE CLIC (TACHAR / EDITAR) ---
         lineDiv.onclick = (e) => {
             if (isLongPressActive) {
-                isLongPressActive = false; // Resetear bandera
+                isLongPressActive = false; 
                 return;
             }
 
@@ -150,18 +175,21 @@ function renderPageLines(container, data) {
             }
         };
 
-        lineDiv.oncontextmenu = (e) => e.preventDefault(); // Bloquear menú contextual
-
+        lineDiv.oncontextmenu = (e) => e.preventDefault();
         container.appendChild(lineDiv);
     }
 }
 
+/* ==========================================
+   EDICIÓN DE NOTAS
+   ========================================== */
 function startEditing(lineDiv, key, index, currentText, currentColor) {
     const isHigh = (db[key] && db[key][index] && db[key][index].high);
     
     lineDiv.innerHTML = ''; 
     let tempColor = currentColor || 'black';
 
+    // Selector de colores durante la edición
     const picker = document.createElement('div');
     picker.className = 'color-picker';
     
@@ -177,6 +205,7 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
     });
     lineDiv.appendChild(picker);
 
+    // Área de texto para la nota
     const input = document.createElement('textarea');
     input.className = `note-input ink-${tempColor}`;
     input.value = currentText === "" ? "*- " : currentText;
@@ -208,7 +237,9 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
 
     input.oninput = () => {
         let val = input.value;
+        // Forzar formato de viñeta "*- "
         if (!val.startsWith("*- ")) val = "*- " + val.replace(/^[\*\-\s]*/, "");
+        // Capitalizar primera letra después de la viñeta
         if (val.length >= 4) val = val.slice(0, 3) + val.charAt(3).toUpperCase() + val.slice(4);
         input.value = val;
         input.style.height = '28px'; 
@@ -225,6 +256,9 @@ function toggleDone(key, index) {
     }
 }
 
+/* ==========================================
+   ALMACENAMIENTO Y AJUSTES
+   ========================================== */
 function save() { 
     localStorage.setItem('agenda_v9', JSON.stringify(db)); 
 }
@@ -252,6 +286,9 @@ function applySettings() {
     render(); 
 }
 
+/* ==========================================
+   UTILIDADES DE FECHA
+   ========================================== */
 function getDayData(dOffset) {
     const d = new Date(); d.setDate(d.getDate() + dOffset);
     const key = d.toISOString().split('T')[0];
@@ -270,6 +307,9 @@ function getWeekNumber(d) {
     return Math.ceil((((d - new Date(Date.UTC(d.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7);
 }
 
+/* ==========================================
+   GESTOS (SWIPE) Y BORRADO
+   ========================================== */
 function setupSwipe() {
     let startX = 0;
     swipeArea.ontouchstart = e => startX = e.touches[0].clientX;
@@ -296,16 +336,19 @@ function setupSwipe() {
 }
 
 function clearAllData() {
-    const confirmation = confirm("¿Estás SEGURO de que quieres borrar TODAS las notas de la agenda? Esta acción no se puede deshacer.");
+    const confirmation = confirm("¿Estás SEGURO de que quieres borrar TODAS las notas? Esta acción no se puede deshacer.");
     if (confirmation) {
         db = {}; 
         save();  
         render(); 
         toggleSettings(); 
-        alert("La agenda ha sido vaciada por completo.");
+        alert("La agenda ha sido vaciada.");
     }
 }
 
+/* ==========================================
+   RESUMEN / ÍNDICE DE NOTAS
+   ========================================== */
 function openSummary() {
     const container = document.getElementById('summary-list-container');
     container.innerHTML = '';
@@ -357,4 +400,5 @@ function getInkColorCode(colorName) {
     }
 }
 
+// Inicializar la aplicación
 init();
