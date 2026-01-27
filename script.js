@@ -216,7 +216,10 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
             db[key][index] = { text: txt, done: false, high: isHigh, color: tempColor };
         }
         currentActiveInput = null;
-        save(); render(); 
+        save(); 
+        render(); 
+        // CAMBIO: Aseguramos que la pantalla baje al terminar la edición en móviles
+        window.scrollTo(0, 0);
     };
 
     input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } };

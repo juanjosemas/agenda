@@ -10,10 +10,11 @@
 body, html {
     margin: 0; 
     padding: 0; 
+    /* MODIFICADO: Permitimos scroll vertical para móviles */
     height: 100%;
     font-family: 'Arial', sans-serif;
-    /* Evita el scroll global para que la libreta sea fija */
-    overflow: hidden; 
+    overflow-x: hidden; 
+    overflow-y: auto; 
     background-color: #333; 
 }
 
@@ -23,13 +24,16 @@ body, html {
 .wood-background {
     background-color: #c4a484; 
     background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); 
-    height: 100vh; 
+    /* MODIFICADO: Usamos min-height para que crezca si el contenido es largo */
+    min-height: 100vh; 
     display: flex; 
     flex-direction: column; 
     align-items: center;
     /* Crea el efecto de profundidad 3D para la apertura */
     perspective: 2000px; 
     transition: background-color 0.5s ease;
+    /* Optimización de scroll en dispositivos Apple */
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ==========================================
@@ -41,6 +45,10 @@ body, html {
     justify-content: space-between;
     padding: 5px 10px;
     align-items: center;
+    /* MODIFICADO: Barra fija arriba para que siempre tengas los botones a mano */
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .date-info {
@@ -112,8 +120,10 @@ body, html {
 .notebook-container {
     display: flex; 
     width: 96%; 
-    height: 92vh; 
-    margin-top: 2px;
+    /* MODIFICADO: Altura mínima para que se vea bien pero permita scroll */
+    min-height: 85vh; 
+    margin-top: 5px;
+    margin-bottom: 20px;
     /* Permite que los hijos se muevan en el espacio 3D */
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), 
@@ -126,6 +136,7 @@ body, html {
     width: 85%; 
     max-width: 600px; 
     cursor: pointer;
+    min-height: 500px;
 }
 
 /* ==========================================
