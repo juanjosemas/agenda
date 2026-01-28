@@ -405,6 +405,6 @@ body.view-single .right-page { border-radius: 12px; transform-origin: left cente
 
 /* Animaciones */
 @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-.page-turn-forward { transform: rotateY(-250deg) scale(0.95); opacity: 0; }
-.page-turn-backward { transform: rotateY(250deg) scale(0.95); opacity: 0; }
+.page-turn-forward { transform: rotateY(-100deg) scale(0.95); opacity: 0; }
+.page-turn-backward { transform: rotateY(100deg) scale(0.95); opacity: 0; }
 .notebook-turning { transform: translateZ(-100px); }
