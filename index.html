@@ -9,27 +9,42 @@
 </head>
 
 <body>
+    <!-- Capa oscura para cerrar el menú -->
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+    <!-- Menú Lateral Desplegable -->
+    <nav id="side-menu" class="side-menu">
+        <div class="menu-header">
+            <h3>Opciones</h3>
+            <button class="close-menu" onclick="toggleMenu()">×</button>
+        </div>
+        <div class="menu-content">
+            <button class="menu-item" onclick="document.getElementById('date-search-input').showPicker(); toggleMenu();">🔍 Buscar Fecha</button>
+            <button class="menu-item" id="mic-btn-menu" onclick="startSpeechRecognition(); toggleMenu();">🎤 Dictar Nota</button>
+            <button class="menu-item" onclick="openPocket(); toggleMenu();">📌 Notas de Bolsillo</button>
+            <button class="menu-item" onclick="openSummary(); toggleMenu();">📋 Ver todas las notas</button>
+            <button class="menu-item" onclick="goToToday(); toggleMenu();">📅 Ir a Hoy</button>
+            <button class="menu-item" onclick="toggleSettings(); toggleMenu();">⚙️ Ajustes</button>
+        </div>
+    </nav>
+
     <div class="wood-background">
          <header class="top-bar">
+             <!-- Botón Hamburguesa -->
+             <button class="hamburger-btn" onclick="toggleMenu()" title="Menú">☰</button>
+             
              <div class="date-info">
                 <span id="month-year">---</span>
                 <small id="week-display">Semana --</small>
             </div>
-            <div class="icons">         
-                <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
-                <button class="icon-btn" onclick="document.getElementById('date-search-input').showPicker()" title="Buscar Fecha">🔍</button>
-                <button class="icon-btn" id="mic-btn" onclick="startSpeechRecognition()" title="Dictar Nota">🎤</button>
-                <!-- NUEVO: Botón de Bolsillo (Pósit) -->
-                <button class="icon-btn" onclick="openPocket()" title="Notas de Bolsillo">📌</button>
-                <button class="icon-btn" onclick="openSummary()" title="Ver todas las notas">📋</button>
-                <button class="icon-btn" onclick="goToToday()" title="Ir a Hoy">📅</button>
-                <button class="icon-btn" onclick="toggleSettings()" title="Ajustes">⚙️</button>
-            </div>
+            
+            <!-- Input oculto sigue aquí para ser funcional -->
+            <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
         </header>
 
         <div class="notebook-container is-closed" id="swipe-area">
             
-            <!-- PORTADA DE LA LIBRETA (Modificada para personalización) -->
+            <!-- PORTADA DE LA LIBRETA -->
             <div class="notebook-cover" id="notebook-cover" onclick="openNotebook()">
                 <div class="cover-decoration"></div>
                 <h1 id="cover-title">AGENDA</h1>
@@ -119,7 +134,7 @@
         </div>
     </div>
 
-    <!-- NUEVO: MODAL DE BOLSILLO (NOTAS RÁPIDAS) -->
+    <!-- MODAL DE BOLSILLO -->
     <div id="pocket-modal" class="modal-overlay">
         <div class="modal-content pocket-style">
             <div class="pocket-pin">📌</div>
@@ -130,7 +145,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE RESUMEN DE NOTAS (ÍNDICE) -->
+    <!-- MODAL DE RESUMEN -->
     <div id="summary-modal" class="modal-overlay">
         <div class="modal-content wide">
             <h3>Índice de Notas</h3>

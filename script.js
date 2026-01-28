@@ -4,7 +4,6 @@
 let offset = 0; 
 let db = JSON.parse(localStorage.getItem('agenda_v9')) || {};
 
-// Actualizamos ajustes con nuevas propiedades: nombre, color portada y contenido bolsillo
 let settings = JSON.parse(localStorage.getItem('agenda_settings')) || {
     paper: 'plain',
     fontSize: 'medium',
@@ -30,7 +29,6 @@ const notebook = document.querySelector('.notebook-container');
  * Función de inicio
  */
 function init() {
-    // Cargar valores en el panel de ajustes
     document.getElementById('setting-paper').value = settings.paper;
     document.getElementById('setting-font-size').value = settings.fontSize;
     document.getElementById('setting-view').value = settings.viewMode;
@@ -45,6 +43,16 @@ function init() {
     setTimeout(() => {
         openNotebook();
     }, 2000);
+}
+
+/* ==========================================
+   FUNCIONES DEL MENÚ LATERAL
+   ========================================== */
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
+    menu.classList.toggle('active');
+    overlay.classList.toggle('active');
 }
 
 /* ==========================================
@@ -78,7 +86,6 @@ function render() {
     const leftData = getDayData(offset);
     const rightData = getDayData(offset + 1);
 
-    // El encabezado superior mantiene el mes corto para ahorrar espacio
     document.getElementById('month-year').innerText = `${leftData.monthShort}. ${leftData.year}`;
     document.getElementById('week-display').innerText = `Semana ${leftData.week}`;
 
@@ -99,7 +106,6 @@ function renderPageLines(container, data) {
 
     const headerLine = document.createElement('div');
     headerLine.className = `date-header-line ${data.isToday ? 'is-today-text' : ''}`;
-    // CAMBIO: Se usa la clase 'day-month' para el mes para poder darle el margen en el CSS
     headerLine.innerHTML = `
         <div>
             <span class="day-name">${data.name}</span>
@@ -128,7 +134,6 @@ function renderPageLines(container, data) {
         };
         lineDiv.appendChild(del);
 
-        // PULSACIÓN LARGA
         const startPress = () => {
             isLongPressActive = false;
             longPressTimer = setTimeout(() => {
@@ -150,7 +155,6 @@ function renderPageLines(container, data) {
         lineDiv.onmouseleave = endPress;
         lineDiv.ontouchend = endPress;
 
-        // CLIC
         lineDiv.onclick = (e) => {
             if (isLongPressActive) { isLongPressActive = false; return; }
             lastEditedLineInfo = { key: data.key, index: i };
@@ -218,7 +222,6 @@ function startEditing(lineDiv, key, index, currentText, currentColor) {
         currentActiveInput = null;
         save(); 
         render(); 
-        // CAMBIO: Aseguramos que la pantalla baje al terminar la edición en móviles
         window.scrollTo(0, 0);
     };
 
@@ -262,7 +265,8 @@ function startSpeechRecognition() {
     recognition.lang = 'es-ES';
     recognition.interimResults = false;
 
-    const micBtn = document.getElementById('mic-btn');
+    // Referencia al botón del menú para el efecto visual
+    const micBtn = document.getElementById('mic-btn-menu');
     recognition.onstart = () => micBtn.classList.add('recording');
 
     recognition.onresult = (event) => {
@@ -304,7 +308,6 @@ function toggleSettings() {
 }
 
 function applySettings() {
-    // Capturar valores
     settings.paper = document.getElementById('setting-paper').value;
     settings.fontSize = document.getElementById('setting-font-size').value;
     settings.viewMode = document.getElementById('setting-view').value;
@@ -313,18 +316,14 @@ function applySettings() {
     
     localStorage.setItem('agenda_settings', JSON.stringify(settings));
 
-    // Aplicar personalización de portada
     const cover = document.getElementById('notebook-cover');
     const title = document.getElementById('cover-title');
     
-    // Limpiar clases de color anteriores y poner la nueva
     cover.classList.remove('cover-brown', 'cover-blue', 'cover-green', 'cover-black', 'cover-red');
     cover.classList.add(`cover-${settings.coverColor}`);
     
-    // Aplicar nombre
     title.innerText = settings.ownerName.trim() === "" ? "AGENDA" : `AGENDA DE ${settings.ownerName.toUpperCase()}`;
 
-    // Otros ajustes
     if (settings.viewMode === 'single') document.body.classList.add('view-single');
     else document.body.classList.remove('view-single');
 

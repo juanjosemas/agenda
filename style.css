@@ -2,645 +2,409 @@
    1. RESET Y CONFIGURACIÓN BÁSICA
    ========================================== */
 * { 
-    box-sizing: border-box; 
-    /* Evita el recuadro azul al tocar botones en móviles */
-    -webkit-tap-highlight-color: transparent; 
+    box-sizing: border-box; /* Incluye padding y bordes en el ancho total */
+    -webkit-tap-highlight-color: transparent; /* Elimina el destello azul al tocar en móviles */
 }
 
 body, html {
-    margin: 0; 
-    padding: 0; 
-    /* MODIFICADO: Permitimos scroll vertical para móviles */
-    height: 100%;
-    font-family: 'Arial', sans-serif;
-    overflow-x: hidden; 
-    overflow-y: auto; 
-    background-color: #333; 
+    margin: 0; /* Elimina márgenes externos */
+    padding: 0; /* Elimina rellenos internos */
+    height: 100%; /* Asegura que ocupe todo el alto */
+    font-family: 'Arial', sans-serif; /* Tipografía base */
+    overflow-x: hidden; /* Evita scroll horizontal */
+    overflow-y: auto; /* Permite scroll vertical */
+    background-color: #333; /* Color de fondo oscuro */
 }
 
 /* ==========================================
    2. CONTENEDOR PRINCIPAL (MESA DE MADERA)
    ========================================== */
 .wood-background {
-    background-color: #c4a484; 
-    background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); 
-    /* MODIFICADO: Usamos min-height para que crezca si el contenido es largo */
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center;
-    /* Crea el efecto de profundidad 3D para la apertura */
-    perspective: 2000px; 
-    transition: background-color 0.5s ease;
-    /* Optimización de scroll en dispositivos Apple */
-    -webkit-overflow-scrolling: touch;
+    background-color: #c4a484; /* Color base madera */
+    background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* Textura de madera */
+    min-height: 100vh; /* Alto mínimo de toda la pantalla */
+    display: flex; /* Uso de flexbox para alinear contenido */
+    flex-direction: column; /* Alineación vertical */
+    align-items: center; /* Centrado horizontal */
+    perspective: 2000px; /* Efecto de profundidad para animaciones 3D */
+    transition: background-color 0.5s ease; /* Transición suave de color */
+    -webkit-overflow-scrolling: touch; /* Scroll fluido en iOS */
 }
 
 /* ==========================================
    3. BARRA SUPERIOR (CABECERA)
    ========================================== */
 .top-bar {
-    width: 100%; 
-    display: flex; 
-    justify-content: space-between;
-    padding: 5px 10px;
-    align-items: center;
-    /* MODIFICADO: Barra fija arriba para que siempre tengas los botones a mano */
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    width: 100%; /* Ocupa todo el ancho */
+    display: flex; /* Flexbox para alinear elementos */
+    justify-content: flex-start; /* Alinea elementos al inicio (izquierda) */
+    padding: 10px 15px; /* Espaciado interno */
+    align-items: center; /* Centrado vertical */
+    position: relative; /* Cambiado de sticky a relative para que suba al hacer scroll */
+    z-index: 100; /* Capa por encima del contenido */
+}
+
+.hamburger-btn {
+    background: white; /* Fondo blanco */
+    border: 2px solid black; /* Borde negro */
+    font-size: 1.5rem; /* Tamaño del icono */
+    padding: 5px 10px; /* Tamaño del botón */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de mano */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra suave */
+    margin-right: 15px; /* Espacio para alejar la fecha a la derecha */
 }
 
 .date-info {
-    background: white; 
-    padding: 5px 8px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex; 
-    flex-direction: column;
-    font-family: 'Piedra', serif;
-    border: 2px solid black;
-    min-width: 90px;
+    background: white; /* Fondo blanco */
+    padding: 5px 12px; /* Espaciado interno */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra */
+    display: flex; /* Flexbox interno */
+    flex-direction: column; /* Coloca mes arriba y semana abajo */
+    font-family: 'Piedra', serif; /* Fuente rústica */
+    border: 2px solid black; /* Borde negro */
+    min-width: 100px; /* Ancho mínimo */
 }
 
 #month-year { 
-    font-weight: bold; 
-    color: #333; 
-    text-transform: lowercase; 
-    font-style: italic;
-    font-size: 1rem;
+    font-weight: bold; /* Texto en negrita */
+    color: #333; /* Color oscuro */
+    text-transform: lowercase; /* Texto en minúsculas */
+    font-style: italic; /* Texto en cursiva */
+    font-size: 1rem; /* Tamaño de fuente */
 }
 
 #week-display { 
-    color: #666; 
-    font-size: 1rem; 
-    font-style: italic; 
+    color: #666; /* Gris para la semana */
+    font-size: 0.9rem; /* Tamaño algo más pequeño */
+    font-style: italic; /* Cursiva */
 }
 
-.icons { 
-    display: flex; 
-    align-items: center; 
-}
-
-.icons .icon-btn {
-    background: white; 
-    border: 2px solid black;
-    padding: 8px 8px;
-    border-radius: 5px;
-    margin-left: 4px; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-/* Efecto visual cuando el micrófono está activo */
-.icon-btn.recording {
-    background-color: #ffcccc;
-    animation: pulse-red 1s infinite;
-}
-
-@keyframes pulse-red {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Ocultar el input de fecha nativo pero mantenerlo funcional */
+/* Ocultar input nativo */
 #date-search-input { 
-    position: absolute; 
-    opacity: 0; 
-    width: 0; 
-    height: 0; 
-    pointer-events: none; 
+    position: absolute; /* Fuera del flujo */
+    opacity: 0; /* Invisible */
+    width: 0; /* Sin ancho */
+    height: 0; /* Sin alto */
+    pointer-events: none; /* No capta clics */
 }
 
 /* ==========================================
-   4. CONTENEDOR DE LA LIBRETA
+   4. MENÚ LATERAL (SIDE MENU)
+   ========================================== */
+.side-menu {
+    position: fixed; /* Fijo en la pantalla */
+    top: 0; /* Desde arriba */
+    left: -100%; /* Escondido a la izquierda */
+    width: 45%; /* Menos de la mitad de la pantalla */
+    height: 100%; /* Todo el alto */
+    background-color: #f5f5f5; /* Fondo gris claro */
+    z-index: 201; /* Por encima de todo */
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3); /* Sombra lateral */
+    transition: left 0.4s ease; /* Animación de deslizamiento */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Vertical */
+}
+
+.side-menu.active {
+    left: 0; /* Se muestra al activarse */
+}
+
+.menu-overlay {
+    position: fixed; /* Fijo */
+    top: 0; /* Arriba */
+    left: 0; /* Izquierda */
+    width: 100%; /* Todo el ancho */
+    height: 100%; /* Todo el alto */
+    background: rgba(0,0,0,0.5); /* Fondo negro traslúcido */
+    z-index: 200; /* Justo debajo del menú */
+    display: none; /* Oculto por defecto */
+}
+
+.menu-overlay.active {
+    display: block; /* Se muestra al abrir menú */
+}
+
+.menu-header {
+    padding: 20px; /* Espacio interno */
+    background: #333; /* Fondo oscuro */
+    color: white; /* Texto blanco */
+    display: flex; /* Flexbox */
+    justify-content: space-between; /* Título a un lado, cierre al otro */
+    align-items: center; /* Centrado vertical */
+    font-family: 'Piedra', serif; /* Fuente decorativa */
+}
+
+.close-menu {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    color: white; /* Cruz blanca */
+    font-size: 2rem; /* Tamaño grande */
+    cursor: pointer; /* Mano */
+}
+
+.menu-content {
+    padding: 10px; /* Espaciado */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Botones apilados */
+    gap: 10px; /* Espacio entre botones */
+}
+
+.menu-item {
+    padding: 15px; /* Botones grandes para dedos */
+    border: 1px solid #ddd; /* Borde sutil */
+    border-radius: 8px; /* Redondeado */
+    background: white; /* Fondo blanco */
+    font-family: 'Lobster', cursive; /* Fuente elegante */
+    font-size: 1.1rem; /* Tamaño de letra */
+    text-align: left; /* Alineado a izquierda */
+    cursor: pointer; /* Mano */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra suave */
+}
+
+/* Efecto micrófono en menú */
+.menu-item.recording {
+    background-color: #ffcccc; /* Fondo rojizo */
+    animation: pulse-red 1s infinite; /* Animación latido */
+}
+
+/* ==========================================
+   5. CONTENEDOR DE LA LIBRETA
    ========================================== */
 .notebook-container {
-    display: flex; 
-    width: 96%; 
-    /* MODIFICADO: Altura mínima para que se vea bien pero permita scroll */
-    min-height: 85vh; 
-    margin-top: 5px;
-    margin-bottom: 20px;
-    /* Permite que los hijos se muevan en el espacio 3D */
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), 
-                width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
-    position: relative;
+    display: flex; /* Flexbox */
+    width: 96%; /* Casi todo el ancho */
+    min-height: 85vh; /* Alto mínimo */
+    margin-top: 5px; /* Separación superior */
+    margin-bottom: 20px; /* Separación inferior */
+    transform-style: preserve-3d; /* Permite rotación 3D */
+    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.8s; /* Animación apertura */
+    position: relative; /* Referencia posicional */
 }
 
-/* Estilo cuando la libreta está en la mesa antes de abrirse */
 .notebook-container.is-closed {
-    width: 85%; 
-    max-width: 600px; 
-    cursor: pointer;
-    min-height: 500px;
+    width: 85%; /* Más estrecha cerrada */
+    max-width: 600px; /* Límite de ancho */
+    cursor: pointer; /* Mano */
+    min-height: 500px; /* Alto fijo cerrada */
 }
 
 /* ==========================================
-   5. PORTADA Y PERSONALIZACIÓN DE COLORES
+   6. PORTADA Y PERSONALIZACIÓN
    ========================================== */
 .notebook-cover {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 0 12px 12px 0;
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 15px 10px 30px rgba(0,0,0,0.6); 
-    /* El eje de rotación es el borde izquierdo (el lomo) */
-    transform-origin: left;
-    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1), 
-                background-color 0.5s;
-    /* Oculta la parte trasera de la portada al girar */
-    backface-visibility: hidden;
-    border: 3px solid rgba(0,0,0,0.2);
+    position: absolute; /* Superpuesta */
+    width: 100%; /* Todo el ancho */
+    height: 100%; /* Todo el alto */
+    border-radius: 0 12px 12px 0; /* Redondeado solo derecha */
+    z-index: 50; /* Por encima de páginas */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Vertical */
+    justify-content: center; /* Centrado vertical */
+    align-items: center; /* Centrado horizontal */
+    box-shadow: 15px 10px 30px rgba(0,0,0,0.6); /* Sombra profunda */
+    transform-origin: left; /* Gira desde el lomo */
+    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1), background-color 0.5s; /* Animación */
+    backface-visibility: hidden; /* No se ve el revés */
+    border: 3px solid rgba(0,0,0,0.2); /* Borde de tapa */
 }
 
-/* Clases dinámicas que se aplican desde JS según ajustes */
-.cover-brown { background-color: #5d4037; }
-.cover-blue  { background-color: #1a237e; }
-.cover-green { background-color: #1b5e20; }
-.cover-black { background-color: #212121; }
-.cover-red   { background-color: #b71c1c; }
+.cover-brown { background-color: #5d4037; } /* Color marrón */
+.cover-blue  { background-color: #1a237e; } /* Color azul */
+.cover-green { background-color: #1b5e20; } /* Color verde */
+.cover-black { background-color: #212121; } /* Color negro */
+.cover-red   { background-color: #b71c1c; } /* Color rojo */
 
 .notebook-cover h1 {
-    font-family: 'Piedra', serif;
-    color: white;
-    font-size: 3.5rem; 
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
-    margin: 0;
-    text-align: center;
-    padding: 0 20px;
+    font-family: 'Piedra', serif; /* Fuente rústica */
+    color: white; /* Letra blanca */
+    font-size: 3.5rem; /* Tamaño grande */
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.6); /* Sombra en texto */
+    margin: 0; /* Sin margen */
+    text-align: center; /* Centrado */
+    padding: 0 20px; /* Espacio lateral */
 }
 
 .notebook-cover p {
-    font-family: Yellowtail;
-    color: rgba(255,215,0,0.7);
-    letter-spacing: 5px; 
-    text-transform: uppercase;
-    font-size: 1.1rem;
-    margin-top: 15px;
+    font-family: Yellowtail; /* Fuente manuscrita */
+    color: rgba(255,215,0,0.7); /* Color dorado suave */
+    letter-spacing: 5px; /* Espaciado de letras */
+    text-transform: uppercase; /* Mayúsculas */
+    font-size: 1.1rem; /* Tamaño medio */
+    margin-top: 15px; /* Separación */
 }
 
 .cover-decoration {
-    width: 70%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ffd700, transparent);
-    margin: 30px 0;
+    width: 70%; /* Ancho línea decorativa */
+    height: 3px; /* Grosor */
+    background: linear-gradient(90deg, transparent, #ffd700, transparent); /* Gradiente dorado */
+    margin: 30px 0; /* Separación vertical */
 }
 
-/* Girar la portada cuando la libreta no tiene la clase is-closed */
 .notebook-container:not(.is-closed) .notebook-cover {
-    transform: rotateY(-180deg);
-    pointer-events: none; 
+    transform: rotateY(-180deg); /* Abre la tapa 180 grados */
+    pointer-events: none; /* No clickable abierta */
 }
 
 /* ==========================================
-   6. ESTILO DE LAS PÁGINAS (INTERIOR)
+   7. ESTILO DE LAS PÁGINAS (INTERIOR)
    ========================================== */
 .page {
-    flex: 1; 
-    background: #D3D3D3; 
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    display: flex; 
-    flex-direction: column;
-    backface-visibility: hidden;
-    overflow: hidden;
-    transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.6s;
-    z-index: 2;
+    flex: 1; /* Ocupan espacio equivalente */
+    background: #D3D3D3; /* Fondo gris claro papel */
+    position: relative; /* Referencia interna */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra de hoja */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Vertical */
+    backface-visibility: hidden; /* No se ve revés */
+    overflow: hidden; /* No deja salir contenido */
+    transition: transform 0.6s, opacity 0.6s; /* Animación */
+    z-index: 2; /* Por encima del fondo */
 }
 
-/* Ocultar la página izquierda y espiral cuando está cerrada */
 .notebook-container.is-closed .left-page,
 .notebook-container.is-closed .spiral {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; /* Oculto si está cerrada */
+    pointer-events: none; /* No clickable */
 }
 
-/* Textura Rayada: Líneas horizontales cada 28px */
 .page.paper-ruled { 
-    background-image: linear-gradient(transparent 27px, #c0c0c0 1px); 
-    background-size: 100% 28px; 
+    background-image: linear-gradient(transparent 27px, #c0c0c0 1px); /* Rayado horizontal */
+    background-size: 100% 28px; /* Altura de línea */
 }
 
-/* Textura Cuadriculada */
 .page.paper-grid { 
-    background-image: 
-        linear-gradient(#c0c0c0 1px, transparent 1px), 
-        linear-gradient(90deg, #c0c0c0 1px, transparent 1px);
-    background-size: 28px 28px;
+    background-image: linear-gradient(#c0c0c0 1px, transparent 1px), linear-gradient(90deg, #c0c0c0 1px, transparent 1px); /* Cuadrícula */
+    background-size: 28px 28px; /* Tamaño cuadro */
 }
 
-.left-page { 
-    border-radius: 12px 0 0 12px; 
-    transform-origin: right center; 
-}
-
-.right-page { 
-    border-radius: 0 12px 12px 0; 
-    transform-origin: left center; 
-}
+.left-page { border-radius: 12px 0 0 12px; transform-origin: right center; } /* Borde izquierdo */
+.right-page { border-radius: 0 12px 12px 0; transform-origin: left center; } /* Borde derecho */
 
 /* ==========================================
-   7. CONTENIDO DE LAS LÍNEAS
+   8. CONTENIDO DE LAS LÍNEAS
    ========================================== */
 .lines-container { 
-    display: flex; 
-    flex-direction: column; 
-    height: 100%; 
-    width: 100%; 
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Vertical */
+    height: 100%; /* Todo el alto */
+    width: 100%; /* Todo el ancho */
 }
 
 .date-header-line {
-    height: 56px; 
-    border-bottom: 2px solid #aaa; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 15px; 
-    background-color: #9c9c9c; 
-    flex-shrink: 0; 
-    position: sticky; 
-    top: 0; 
-    z-index: 5;
+    height: 56px; /* Alto cabecera de página */
+    border-bottom: 2px solid #aaa; /* Línea separadora */
+    display: flex; /* Flexbox */
+    justify-content: space-between; /* Elementos extremos */
+    align-items: center; /* Centrado vertical */
+    padding: 0 15px; /* Espaciado lateral */
+    background-color: #9c9c9c; /* Fondo gris cabecera */
+    flex-shrink: 0; /* No se encoge */
+    position: sticky; /* Fijo al inicio de la página */
+    top: 0; /* Arriba */
+    z-index: 5; /* Por encima de líneas */
 }
 
-.right-page .date-header-line { 
-    padding-left: 25px; 
-}
+.right-page .date-header-line { padding-left: 25px; } /* Ajuste espiral derecho */
 
-.day-name { 
-    font-family: 'Lobster', cursive; 
-    font-size: 1.3rem; 
-    color: #444; 
-}
-
-.day-num { 
-    font-family: 'Lobster', cursive; 
-    font-size: 1.5rem; 
-    color: #444; 
-    margin-left: 5px; 
-}
-
-/* NUEVA CLASE: Estilo para el mes en la página */
-.day-month {
-    font-family: Lobster; 
-    font-size: 1.3rem; 
-    color: #444; 
-    margin-left: 5px; /* Espacio extra para separar del número */
-}
-
-.day-progress { 
-    font-family: 'Arial', sans-serif; 
-    font-size: 0.8rem; 
-    color: #444; 
-    margin-left: 10px; 
-    font-weight: bold; 
-}
+.day-name { font-family: 'Lobster', cursive; font-size: 1.3rem; color: #444; } /* Fuente nombre día */
+.day-num { font-family: 'Lobster', cursive; font-size: 1.5rem; color: #444; margin-left: 5px; } /* Fuente número día */
+.day-month { font-family: Lobster; font-size: 1.3rem; color: #444; margin-left: 5px; } /* Fuente mes */
+.day-progress { font-family: 'Arial', sans-serif; font-size: 0.8rem; color: #444; margin-left: 10px; font-weight: bold; } /* Progreso */
 
 .date-header-line.is-today-text .day-name, 
 .date-header-line.is-today-text .day-num,
-.date-header-line.is-today-text .day-month { 
-    color: #a32a2a; 
-}
+.date-header-line.is-today-text .day-month { color: #a32a2a; } /* Color rojo si es hoy */
 
 .note-line {
-    min-height: 28px; 
-    height: auto; 
-    display: flex; 
-    align-items: flex-start;
-    padding: 0 15px; 
-    font-family: 'Sriracha', cursive; 
-    cursor: pointer; 
-    font-style: italic; 
-    position: relative; 
-    width: 100%;
+    min-height: 28px; /* Alto línea */
+    height: auto; /* Crece con texto */
+    display: flex; /* Flexbox */
+    align-items: flex-start; /* Alinea al inicio */
+    padding: 0 15px; /* Espaciado */
+    font-family: 'Sriracha', cursive; /* Fuente manuscrita */
+    cursor: pointer; /* Mano */
+    font-style: italic; /* Cursiva */
+    position: relative; /* Referencia posicional */
+    width: 100%; /* Todo el ancho */
 }
 
-.right-page .note-line { 
-    padding-left: 25px; 
-}
+.right-page .note-line { padding-left: 25px; } /* Ajuste espiral derecho */
 
-/* Tamaños de letra configurables */
-.note-line.size-small { font-size: 14px; }
-.note-line.size-medium { font-size: 18px; }
-.note-line.size-large { font-size: 22px; }
+.note-line.size-small { font-size: 14px; } /* Letra pequeña */
+.note-line.size-medium { font-size: 18px; } /* Letra normal */
+.note-line.size-large { font-size: 22px; } /* Letra grande */
 
-/* Colores de Tinta */
-.ink-black { color: #222 !important; }
-.ink-blue { color: #1a4a9e !important; }
-.ink-red { color: #a32a2a !important; }
-.ink-green { color: #1a632e !important; }
-.ink-orange { color: #ff8000 !important; }
+.ink-black { color: #222 !important; } /* Tinta negra */
+.ink-blue { color: #1a4a9e !important; } /* Tinta azul */
+.ink-red { color: #a32a2a !important; } /* Tinta roja */
+.ink-green { color: #1a632e !important; } /* Tinta verde */
+.ink-orange { color: #ff8000 !important; } /* Tinta naranja */
 
-/* Efecto de resaltador amarillo */
 .note-line.highlighted::before {
-    content: ""; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background-color: rgba(255, 255, 0, 0.8) !important; 
-    z-index: 0;
+    content: ""; /* Elemento vacío */
+    position: absolute; /* Superpuesto */
+    top: 0; left: 0; width: 100%; height: 100%; /* Cubre todo */
+    background-color: rgba(255, 255, 0, 0.8) !important; /* Amarillo resaltador */
+    z-index: 0; /* Fondo del texto */
 }
 
-.note-line span { 
-    position: relative; 
-    z-index: 1; 
-    flex: 1; 
-    white-space: normal; 
-    word-break: break-word; 
-    line-height: 28px; 
-    display: block; 
-}
+.note-line span { position: relative; z-index: 1; flex: 1; white-space: normal; word-break: break-word; line-height: 28px; display: block; } /* Contenedor texto */
+.note-line.completed span { text-decoration: line-through; color: #777 !important; } /* Tachado */
 
-.note-line.completed span { 
-    text-decoration: line-through; 
-    color: #777 !important; 
-}
-
-.delete-btn { 
-    position: relative; 
-    z-index: 2; 
-    color: #a32a2a; 
-    font-weight: bold; 
-    font-size: 1.1rem; 
-    padding: 0 6px; 
-    display: none; 
-    height: 28px; 
-    line-height: 28px;
-}
-
-.note-line.completed .delete-btn { 
-    display: block; 
-}
+.delete-btn { position: relative; z-index: 2; color: #a32a2a; font-weight: bold; font-size: 1.1rem; padding: 0 6px; display: none; height: 28px; line-height: 28px; } /* Botón borrar */
+.note-line.completed .delete-btn { display: block; } /* Se muestra al tachar */
 
 /* ==========================================
-   8. EDITOR DE TEXTO (TEXTAREA DINÁMICO)
+   9. EDITOR Y OTROS
    ========================================== */
-.note-input {
-    flex: 1; 
-    border: none; 
-    outline: none; 
-    background: transparent; 
-    font-family: 'Sriracha', cursive; 
-    font-style: italic; 
-    color: inherit; 
-    width: 100%; 
-    resize: none; 
-    line-height: 28px; 
-    font-size: inherit; 
-    overflow: hidden; 
-    padding: 0; 
-    margin: 0; 
-    position: relative; 
-    z-index: 5;
-}
+.note-input { flex: 1; border: none; outline: none; background: transparent; font-family: 'Sriracha', cursive; font-style: italic; color: inherit; width: 100%; resize: none; line-height: 28px; font-size: inherit; overflow: hidden; padding: 0; margin: 0; position: relative; z-index: 5; } /* Textarea de edición */
 
-/* Burbuja flotante para elegir color de tinta */
-.color-picker {
-    position: absolute; 
-    right: 15px; 
-    top: -22px; 
-    display: flex; 
-    gap: 8px;
-    background: white; 
-    padding: 5px 10px; 
-    border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
-    z-index: 100;
-}
-
-.color-dot { 
-    width: 16px; 
-    height: 16px; 
-    border-radius: 50%; 
-    cursor: pointer; 
-    border: 1px solid rgba(0,0,0,0.1); 
-    transition: transform 0.2s; 
-}
-
-.color-dot:hover { transform: scale(1.2); }
-.dot-black { background-color: #222; }
+.color-picker { position: absolute; right: 15px; top: -22px; display: flex; gap: 8px; background: white; padding: 5px 10px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 100; } /* Selector colores */
+.color-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); transition: transform 0.2s; } /* Puntos de color */
+.color-dot:hover { transform: scale(1.2); } /* Aumenta al pasar ratón */
+.dot-black { background-color: #222; } 
 .dot-blue  { background-color: #1a4a9e; }
 .dot-red   { background-color: #a32a2a; }
 .dot-green { background-color: #1a632e; }
 .dot-orange { background-color: #ff8000; }
 
-/* ==========================================
-   9. ESPIRAL METÁLICO CENTRAL
-   ========================================== */
-.spiral {
-    width: 25px; 
-    background: #444; 
-    z-index: 10; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: space-around; 
-    box-shadow: inset 0 0 10px #000; 
-    transition: opacity 0.5s;
-}
+/* Espiral */
+.spiral { width: 25px; background: #444; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: space-around; box-shadow: inset 0 0 10px #000; transition: opacity 0.5s; }
+.ring { width: 32px; height: 10px; border-radius: 5px; background: linear-gradient(to bottom, #fff, #999); }
 
-.ring { 
-    width: 32px; 
-    height: 10px; 
-    border-radius: 5px; 
-    background: linear-gradient(to bottom, #fff, #999); 
-}
+/* Modales */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+.modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; font-family: 'Piedra', serif; }
 
-/* ==========================================
-   10. MODALES (GENERALES)
-   ========================================== */
-.modal-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: rgba(0,0,0,0.7); 
-    display: none; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 100;
-}
+/* Pósit */
+.pocket-style { background-color: #fff9c4; border-left: 2px solid #fbc02d; font-family: Piedra; font-style: italic; position: relative; max-width: 350px; }
+.pocket-pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; }
+#pocket-textarea { width: 100%; height: 250px; border: none; background: transparent; font-family: Caveat; font-size: 1.4rem; outline: none; resize: none; color: #333; line-height: 1.4; }
 
-.modal-content {
-    background: white; 
-    padding: 25px; 
-    border-radius: 12px; 
-    width: 90%; 
-    max-width: 400px; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
-    text-align: center; 
-    font-family: 'Piedra', serif;
-}
+/* Resumen */
+.modal-content.wide { max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; }
+.summary-list { text-align: left; overflow-y: auto; margin-top: 15px; padding-right: 10px; font-family: 'Arial', sans-serif; }
+.summary-day-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.summary-day-header { font-family: Lobster; color: #a32a2a; font-size: 1.2rem; cursor: pointer; display: inline-block; }
+.summary-note { font-family: Sriracha; font-size: 0.9rem; margin: 5px 0 5px 15px; color: #555; font-style: italic; }
 
-/* ==========================================
-   11. NOTAS DE BOLSILLO (ESTILO PÓSIT)
-   ========================================== */
-.pocket-style {
-    background-color: #fff9c4; /* Color amarillento de pósit */
-    border-left: 2px solid #fbc02d;
-    font-family: Piedra;
-    font-style: italic;
-    position: relative;
-    max-width: 350px;
-}
+/* Ajustes */
+.setting-item { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; font-family: Piedra; font-style: italic; }
+.setting-item input { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-family: Piedra; width: 60%; }
+.btn-block { width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer; font-size: 0.8rem; font-family: Lobster; }
+.backup-btns { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.btn-backup { flex: 1; padding: 8px; font-size: 0.8rem; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #fff; font-family: Lobster; }
 
-.pocket-pin {
-    position: absolute; 
-    top: -10px; 
-    left: 50%; 
-    transform: translateX(-50%);
-    font-size: 1.5rem;
-}
+/* Vista Simple */
+body.view-single .left-page { display: none; }
+body.view-single .notebook-container { width: 90%; max-width: 500px; }
+body.view-single .notebook-container.is-closed { width: 80%; }
+body.view-single .right-page { border-radius: 12px; transform-origin: left center; }
 
-#pocket-textarea {
-    width: 100%; 
-    height: 250px; 
-    border: none; 
-    background: transparent;
-    font-family: Caveat; 
-    font-size: 1.4rem; 
-    outline: none;
-    resize: none; 
-    color: #333; 
-    line-height: 1.4;
-}
-
-/* ==========================================
-   12. RESUMEN / ÍNDICE DE NOTAS
-   ========================================== */
-.modal-content.wide { 
-    max-width: 600px; 
-    max-height: 85vh; 
-    display: flex; 
-    flex-direction: column; 
-}
-
-.summary-list { 
-    text-align: left; 
-    overflow-y: auto; 
-    margin-top: 15px; 
-    padding-right: 10px; 
-    font-family: 'Arial', sans-serif; 
-}
-
-.summary-day-item { 
-    margin-bottom: 20px; 
-    border-bottom: 1px solid #eee; 
-    padding-bottom: 10px; 
-}
-
-.summary-day-header { 
-    font-family: Lobster; 
-    color: #a32a2a; 
-    font-size: 1.2rem; 
-    cursor: pointer; 
-    display: inline-block; 
-}
-
-.summary-note { 
-    font-family: Sriracha; 
-    font-size: 0.9rem; 
-    margin: 5px 0 5px 15px; 
-    color: #555; 
-    font-style: italic; 
-}
-
-/* ==========================================
-   13. ELEMENTOS DEL PANEL DE AJUSTES
-   ========================================== */
-.setting-item { 
-    margin-bottom: 15px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    font-family: Piedra; 
-    font-style: italic; 
-}
-
-.setting-item input { 
-    padding: 5px; 
-    border-radius: 4px; 
-    border: 1px solid #ccc; 
-    font-family: Piedra; 
-    width: 60%; 
-}
-
-.btn-block { 
-    width: 100%; 
-    padding: 10px; 
-    margin-top: 10px; 
-    border-radius: 5px; 
-    border: 1px solid #ccc; 
-    background: #f9f9f9; 
-    cursor: pointer; 
-    font-size: 0.8rem; 
-    font-family: Lobster;
-}
-
-.backup-btns { 
-    display: flex; 
-    justify-content: space-between; 
-    gap: 10px; 
-    margin-top: 10px; 
-}
-
-.btn-backup { 
-    flex: 1; 
-    padding: 8px; 
-    font-size: 0.8rem; 
-    cursor: pointer; 
-    border-radius: 5px; 
-    border: 1px solid #ccc; 
-    background: #fff; 
-    font-family: Lobster;
-}
-
-/* ==========================================
-   14. VISTA SIMPLE (MÓVILES / 1 DÍA)
-   ========================================== */
-body.view-single .left-page { 
-    display: none; 
-}
-
-body.view-single .notebook-container { 
-    width: 90%; 
-    max-width: 500px; 
-}
-
-body.view-single .notebook-container.is-closed { 
-    width: 80%; 
-}
-
-body.view-single .right-page { 
-    border-radius: 0 12px 12px 0; 
-    transform-origin: left center; 
-}
-
-/* ==========================================
-   15. ANIMACIONES DE PASAR PÁGINA
-   ========================================== */
-.page-turn-forward { 
-    transform: rotateY(-250deg) scale(0.95); 
-    opacity: 0; 
-}
-
-.page-turn-backward { 
-    transform: rotateY(250deg) scale(0.95); 
-    opacity: 0; 
-}
-
-.notebook-turning { 
-    transform: translateZ(-100px); 
-}
+/* Animaciones */
+@keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.page-turn-forward { transform: rotateY(-250deg) scale(0.95); opacity: 0; }
+.page-turn-backward { transform: rotateY(250deg) scale(0.95); opacity: 0; }
+.notebook-turning { transform: translateZ(-100px); }
