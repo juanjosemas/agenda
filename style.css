@@ -52,6 +52,7 @@ body, html {
     cursor: pointer; /* Cambia el puntero a mano para indicar que es clicable */
     margin-right: 15px; /* Añade un margen a la derecha para separar de la fecha */
     margin-left: 5px; /* Margen izquierdo para no pegar al borde */
+    margin-top: 5px; /* Margen arriba para no pegar al borde */
 }
 
 /* Primera línea: Icono */
@@ -63,6 +64,7 @@ body, html {
     background-color: black; /* Fondo negro tras el icono circular */
     border: 2px solid red; /* Borde rojo fino */
     box-shadow: 0 0 0 3px black; /* Sombra que crea un segundo borde negro */
+    margin-left: 15px; /* Empuja el icono hacia la derecha de la barra */
 }
 
 /* Texto pequeño debajo del icono */
@@ -73,6 +75,7 @@ body, html {
     font-family: Piedra; /* Tipografía decorativa Piedra */
     margin-top: 8px; /* Espacio de 8 píxeles sobre el texto */
     color: #333; /* Color gris oscuro para el texto */
+    margin-left: 15px; ; /* Empuja el texto hacia la derecha de la barra */
 }
 
 @keyframes logo {
@@ -98,6 +101,7 @@ body, html {
     border: 2px solid black; /* Borde negro de 2 píxeles */
     min-width: 90px; /* Ancho mínimo para que los datos no se amontonen */
     align-items: center; /* Centra el contenido horizontalmente */
+    margin-left: 45px; /* Empuja la caja del tiempo hacia la derecha de la barra */
 }
 
 /* Contenedor de Icono y Temperatura */
@@ -124,7 +128,7 @@ body, html {
     display: flex; /* Activa flexbox para centrar el texto */
     align-items: center; /* Centra el texto verticalmente */
     font-family: Lobster; /* Fuente rústica */
-    margin-left: auto; /* Empuja el reloj hacia la derecha de la barra */
+    margin-left: 50px; /* Empuja el reloj hacia la derecha de la barra */
     font-size: 1.1rem; /* Tamaño del texto del reloj */
     font-weight: bold; /* Texto en negrita */
     color: #a32a2a; /* Color rojo vino para destacar */
@@ -132,6 +136,8 @@ body, html {
     justify-content: center; /* Centra el texto horizontalmente */
     height: 38px; /* Altura de la caja */
     font-style: italic; /* Texto en cursiva */
+    border: 2px solid black; /* Borde negro de 2 píxeles */
+    border-radius: 5px; /* Redondea las esquinas del recuadro */
 }
 
 #week-display { 
