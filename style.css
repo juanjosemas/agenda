@@ -99,7 +99,7 @@ body, html {
     display: flex; /* Activa flexbox para centrar el texto */
     align-items: center; /* Centra el texto verticalmente */
     font-family: Lobster; /* Fuente rústica */
-    margin-left: 60px; /* Reducido: Espacio a la izquierda para acercarlo a la fecha */
+    margin-left: 80px; /* Reducido: Espacio a la izquierda para acercarlo a la fecha */
     font-size: 1.1rem; /* Mantenido: Tamaño del texto del reloj */
     font-weight: bold; /* Texto en negrita */
     color: 'black', #a32a2a; /* Color rojo vino para destacar */
