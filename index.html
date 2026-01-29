@@ -29,16 +29,21 @@
     </nav>
        <div class="wood-background">
          <header class="top-bar">
-             <!-- Botón Hamburguesa --> 
-         <div class="cabecera">   
-    <img src="img/Juanjo.ico" class="ico" width="35">       
-             </div>
-             <button class="hamburger-btn" onclick="toggleMenu()" title="Menú">☰</button>
              
-             <div class="date-info">
-                <span id="month-year">---</span>
+             <!-- El Icono ahora actúa como botón de menú --> 
+             <div class="cabecera" onclick="toggleMenu()" title="Abrir Menú">   
+                <img src="img/Juanjo.ico" class="ico" width="35">
+                <span class="menu-label">MENÚ</span>       
+             </div>
+             
+             <!-- Nueva Caja de Información Meteorológica -->
+             <div class="weather-box" id="weather-box">
+                <div class="weather-main">
+                    <span id="weather-icon">--</span>
+                    <span id="weather-temp">--°C</span>
+                </div>
                 <small id="week-display">Semana --</small>
-            </div>
+             </div>
 
             <!-- Nuevo elemento para el reloj -->
             <div id="clock-display" class="clock-box">00:00:00</div>
@@ -46,9 +51,9 @@
             <!-- Input oculto sigue aquí para ser funcional -->
             <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
         </header>
-
+        
         <div class="notebook-container is-closed" id="swipe-area">
-            
+              
             <!-- PORTADA DE LA LIBRETA -->
             <div class="notebook-cover" id="notebook-cover" onclick="openNotebook()">
                 <div class="cover-decoration"></div>

@@ -44,9 +44,57 @@ function init() {
     setInterval(updateClock, 1000);
     updateClock();
 
+    // Obtener el clima al iniciar
+    initWeather();
+
     setTimeout(() => {
         openNotebook();
     }, 2000);
+}
+
+/* ==========================================
+   FUNCIONES DEL CLIMA
+   ========================================== */
+function initWeather() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(position => {
+            fetchWeather(position.coords.latitude, position.coords.longitude);
+        }, () => {
+            // Si el usuario niega el permiso, mostramos un estado neutro
+            document.getElementById('weather-icon').innerText = '📍';
+            document.getElementById('weather-temp').innerText = 'Off';
+        });
+    }
+}
+
+async function fetchWeather(lat, lon) {
+    try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const data = await response.json();
+        updateWeatherDisplay(data.current_weather);
+    } catch (error) {
+        console.error("Error al obtener el clima", error);
+    }
+}
+
+function updateWeatherDisplay(weather) {
+    const iconEl = document.getElementById('weather-icon');
+    const tempEl = document.getElementById('weather-temp');
+    
+    tempEl.innerText = `${Math.round(weather.temperature)}°C`;
+    iconEl.innerText = getWeatherEmoji(weather.weathercode);
+}
+
+function getWeatherEmoji(code) {
+    // Mapeo de códigos WMO a Emojis
+    if (code === 0) return '☀️'; // Despejado
+    if (code >= 1 && code <= 3) return '⛅'; // Parcialmente nublado
+    if (code >= 45 && code <= 48) return '🌫️'; // Niebla
+    if (code >= 51 && code <= 67) return '🌧️'; // Lluvia/Drizzle
+    if (code >= 71 && code <= 77) return '❄️'; // Nieve
+    if (code >= 80 && code <= 82) return '🌦️'; // Chubascos
+    if (code >= 95) return '⛈️'; // Tormenta
+    return '🌡️';
 }
 
 /* ==========================================
@@ -102,7 +150,6 @@ function render() {
     const leftData = getDayData(offset);
     const rightData = getDayData(offset + 1);
 
-    document.getElementById('month-year').innerText = `${leftData.monthShort}. ${leftData.year}`;
     document.getElementById('week-display').innerText = `Semana ${leftData.week}`;
 
     if (settings.viewMode === 'single') {
@@ -127,6 +174,7 @@ function renderPageLines(container, data) {
             <span class="day-name">${data.name}</span>
             <span class="day-num">${data.num}</span>
             <span class="day-month">${data.month}</span>
+            <span class="day-year">${data.year}</span>
             ${total > 0 ? `<span class="day-progress">(${completed}/${total})</span>` : ''}
         </div>`;
     container.appendChild(headerLine);

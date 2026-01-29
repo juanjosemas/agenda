@@ -44,82 +44,99 @@ body, html {
     z-index: 100; /* Asegura que la barra esté por encima de la libreta */
 }
 
+/* Contenedor del icono y etiqueta de menú */
+.cabecera {
+    display: flex; /* Activa flexbox para organizar icono y texto */
+    flex-direction: column; /* Coloca el texto debajo del icono */
+    align-items: center; /* Centra los elementos horizontalmente */
+    cursor: pointer; /* Cambia el puntero a mano para indicar que es clicable */
+    margin-right: 15px; /* Añade un margen a la derecha para separar de la fecha */
+    margin-left: 5px; /* Margen izquierdo para no pegar al borde */
+}
+
 /* Primera línea: Icono */
 .ico {
-    margin-top: 5px;
-    margin-left: 5px;
-    border-radius: 50%;
-    animation-name: logo;
-    animation-duration: 3s;
-    transition: all 0.5s ease-in-out;
-    background-color: black;
-    border: 2px solid red;
-    box-shadow: 0 0 0 3px black;
+    border-radius: 50%; /* Hace que el icono sea circular */
+    animation-name: logo; /* Asocia la animación llamada logo */
+    animation-duration: 3s; /* Duración de la animación de entrada */
+    transition: all 0.5s ease-in-out; /* Suaviza cualquier cambio de estado */
+    background-color: black; /* Fondo negro tras el icono circular */
+    border: 2px solid red; /* Borde rojo fino */
+    box-shadow: 0 0 0 3px black; /* Sombra que crea un segundo borde negro */
+}
+
+/* Texto pequeño debajo del icono */
+.menu-label {
+    font-size: 0.8rem; /* Tamaño de fuente para la etiqueta */
+    font-style: italic; /* Aplica estilo cursivo al texto */
+    font-weight: bold; /* Texto en negrita para legibilidad */
+    font-family: Piedra; /* Tipografía decorativa Piedra */
+    margin-top: 8px; /* Espacio de 8 píxeles sobre el texto */
+    color: #333; /* Color gris oscuro para el texto */
 }
 
 @keyframes logo {
     from {
-        opacity: 0;
-        transform: scale(0.5) rotate(0deg);
+        opacity: 0; /* Empieza invisible */
+        transform: scale(0.5) rotate(0deg); /* Empieza pequeño y sin rotación */
     }
     to {
-        opacity: 1;
-        transform: scale(1) rotate(1440deg);
+        opacity: 1; /* Termina visible */
+        transform: scale(1) rotate(1440deg); /* Termina tamaño normal con giro completo */
     }
 }
 
-.hamburger-btn {
-    background: #c4a484; /* Color de fondo madera para el botón */
-    border: 2px solid black; /* Borde negro sólido de 2 píxeles */
-    font-size: 1.5rem; /* Mantenido: Tamaño del icono de tres rayas */
-    padding: 2px 8px; /* Reducido: Espacio interno para que la caja sea más pequeña */
-    border-radius: 5px; /* Redondea ligeramente las esquinas del botón */
-    cursor: pointer; /* Cambia el puntero al icono de mano al pasar por encima */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Añade una pequeña sombra para dar relieve */
-    margin-right: 10px; /* Reducido: Espacio para separar el botón de la fecha */
-    margin-left: 10px;
-}
-
-.date-info {
-    background: #c4a484; /* Color de fondo madera para el recuadro de fecha */
-    padding: 2px 8px; /* Reducido: Espaciado interno para compactar la caja */
+/* Caja de Información Meteorológica */
+.weather-box {
+    background: #c4a484; /* Color de fondo madera para el recuadro */
+    padding: 2px 10px; /* Espaciado interno compacto */
     border-radius: 5px; /* Redondea las esquinas del recuadro */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Aplica una sombra suave */
-    display: flex; /* Activa flexbox para organizar mes y semana */
-    flex-direction: column; /* Coloca el mes sobre el número de semana */
+    display: flex; /* Activa flexbox para organizar contenido */
+    flex-direction: column; /* Coloca la semana debajo del tiempo */
     font-family: Piedra; /* Aplica la tipografía decorativa */
     border: 2px solid black; /* Borde negro de 2 píxeles */
-    min-width: 80px; /* Reducido: Ancho mínimo menor para que la caja sea más estrecha */
+    min-width: 90px; /* Ancho mínimo para que los datos no se amontonen */
+    align-items: center; /* Centra el contenido horizontalmente */
+}
+
+/* Contenedor de Icono y Temperatura */
+.weather-main {
+    display: flex; /* Activa flexbox para alinear icono y temp en línea */
+    align-items: center; /* Centra verticalmente */
+    gap: 5px; /* Espacio entre el icono y el texto */
+}
+
+#weather-icon {
+    font-size: 1.4rem; /* Tamaño grande para el icono del tiempo */
+}
+
+#weather-temp {
+    font-weight: bold; /* Temperatura en negrita */
+    font-size: 1rem; /* Tamaño de fuente para la temperatura */
+    color: #333; /* Color gris oscuro */
 }
 
 .clock-box {
-    background: #c4a484; /*Color de fondo*/
+    background: #c4a484; /* Color de fondo */
     padding: 2px 8px; /* Reducido: Espaciado interno para compactar la caja */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para profundidad */
     display: flex; /* Activa flexbox para centrar el texto */
     align-items: center; /* Centra el texto verticalmente */
     font-family: Lobster; /* Fuente rústica */
-    margin-left: 80px; /* Reducido: Espacio a la izquierda para acercarlo a la fecha */
-    font-size: 1.1rem; /* Mantenido: Tamaño del texto del reloj */
+    margin-left: auto; /* Empuja el reloj hacia la derecha de la barra */
+    font-size: 1.1rem; /* Tamaño del texto del reloj */
     font-weight: bold; /* Texto en negrita */
-    color: 'black', #a32a2a; /* Color rojo vino para destacar */
-    min-width: 75px; /* Reducido: Ancho mínimo ajustado al contenido */
+    color: #a32a2a; /* Color rojo vino para destacar */
+    min-width: 75px; /* Ancho mínimo ajustado al contenido */
     justify-content: center; /* Centra el texto horizontalmente */
-    height: 38px; /* Reducido: Altura menor para que la caja sea más baja */
+    height: 38px; /* Altura de la caja */
     font-style: italic; /* Texto en cursiva */
-}
-
-#month-year { 
-    font-weight: bold; /* Pone el texto del mes en negrita */
-    color: #333; /* Color gris muy oscuro */
-    text-transform: lowercase; /* Convierte el texto a minúsculas */
-    font-style: italic; /* Aplica estilo cursivo */
-    font-size: 1rem; /* Mantenido: Tamaño de fuente estándar */
 }
 
 #week-display { 
     color: #666; /* Color gris medio para la semana */
-    font-size: 0.9rem; /* Mantenido: Tamaño de letra ligeramente más pequeño */
+    font-size: 0.8rem; /* Tamaño de letra pequeño para la semana */
     font-style: italic; /* Estilo cursivo */
 }
 
@@ -295,7 +312,7 @@ body, html {
     background: #D3D3D3; /* Color de fondo gris papel */
     position: relative; /* Referencia para las líneas interiores */
     box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra de las hojas */
-    display: flex; /* Flexbox para las líneas */
+    display: flex; /* Activa flexbox para las líneas */
     flex-direction: column; /* Líneas en vertical */
     backface-visibility: hidden; /* Mejora rendimiento en giros */
     overflow: hidden; /* Corta el contenido que sobresalga */
@@ -351,11 +368,13 @@ body, html {
 .day-name { font-family: 'Lobster', cursive; font-size: 1.3rem; color: #444; } /* Estilo nombre del día */
 .day-num { font-family: 'Lobster', cursive; font-size: 1.5rem; color: #444; margin-left: 5px; } /* Estilo número del día */
 .day-month { font-family: Lobster; font-size: 1.3rem; color: #444; margin-left: 5px; } /* Estilo nombre del mes */
+.day-year { font-family: Lobster; font-size: 1.3rem; color: #444; margin-left: 5px; } /* Estilo del año */
 .day-progress { font-family: 'Arial', sans-serif; font-size: 0.8rem; color: #444; margin-left: 10px; font-weight: bold; } /* Estilo progreso */
 
 .date-header-line.is-today-text .day-name, 
 .date-header-line.is-today-text .day-num,
-.date-header-line.is-today-text .day-month { color: #a32a2a; } /* Resalta en rojo si es la fecha actual */
+.date-header-line.is-today-text .day-month,
+.date-header-line.is-today-text .day-year { color: #a32a2a; } /* Resalta en rojo si es la fecha actual */
 
 .note-line {
     min-height: 28px; /* Altura mínima de una línea */
@@ -441,4 +460,3 @@ body.view-single .right-page { border-radius: 12px; transform-origin: left cente
 .page-turn-forward { transform: rotateY(-150deg) scale(0.95); opacity: 0; } /* Animación pasar adelante */
 .page-turn-backward { transform: rotateY(150deg) scale(0.95); opacity: 0; } /* Animación pasar atrás */
 .notebook-turning { transform: translateZ(0px); } /* Aleja la libreta mientras pasa página */
-
