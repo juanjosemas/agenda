@@ -44,6 +44,30 @@ body, html {
     z-index: 100; /* Asegura que la barra esté por encima de la libreta */
 }
 
+/* Primera línea: Icono */
+.ico {
+    margin-top: 5px;
+    margin-left: 5px;
+    border-radius: 50%;
+    animation-name: logo;
+    animation-duration: 3s;
+    transition: all 0.5s ease-in-out;
+    background-color: black;
+    border: 2px solid red;
+    box-shadow: 0 0 0 3px black;
+}
+
+@keyframes logo {
+    from {
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(1440deg);
+    }
+}
+
 .hamburger-btn {
     background: #c4a484; /* Color de fondo madera para el botón */
     border: 2px solid black; /* Borde negro sólido de 2 píxeles */
@@ -53,6 +77,7 @@ body, html {
     cursor: pointer; /* Cambia el puntero al icono de mano al pasar por encima */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Añade una pequeña sombra para dar relieve */
     margin-right: 10px; /* Reducido: Espacio para separar el botón de la fecha */
+    margin-left: 10px;
 }
 
 .date-info {
@@ -74,7 +99,7 @@ body, html {
     display: flex; /* Activa flexbox para centrar el texto */
     align-items: center; /* Centra el texto verticalmente */
     font-family: Lobster; /* Fuente rústica */
-    margin-left: 120px; /* Reducido: Espacio a la izquierda para acercarlo a la fecha */
+    margin-left: 60px; /* Reducido: Espacio a la izquierda para acercarlo a la fecha */
     font-size: 1.1rem; /* Mantenido: Tamaño del texto del reloj */
     font-weight: bold; /* Texto en negrita */
     color: 'black', #a32a2a; /* Color rojo vino para destacar */
@@ -413,6 +438,7 @@ body.view-single .notebook-container.is-closed { width: 80%; } /* Ancho cerrada 
 body.view-single .right-page { border-radius: 12px; transform-origin: left center; } /* Bordes redondeados totales en vista simple */
 
 @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } } /* Animación latido rojo */
-.page-turn-forward { transform: rotateY(-100deg) scale(0.95); opacity: 0; } /* Animación pasar adelante */
-.page-turn-backward { transform: rotateY(100deg) scale(0.95); opacity: 0; } /* Animación pasar atrás */
-.notebook-turning { transform: translateZ(-100px); } /* Aleja la libreta mientras pasa página */
+.page-turn-forward { transform: rotateY(-150deg) scale(0.95); opacity: 0; } /* Animación pasar adelante */
+.page-turn-backward { transform: rotateY(150deg) scale(0.95); opacity: 0; } /* Animación pasar atrás */
+.notebook-turning { transform: translateZ(0px); } /* Aleja la libreta mientras pasa página */
+
