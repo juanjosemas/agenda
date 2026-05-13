@@ -52,7 +52,7 @@ body, html {
     cursor: pointer; /* Cambia el puntero a mano para indicar que es clicable */
     margin-right: 15px; /* Añade un margen a la derecha para separar de la fecha */
     margin-left: 5px; /* Margen izquierdo para no pegar al borde */
-    margin-top: 2px; /* Margen arriba para no pegar al borde */
+    margin-top: 5px; /* Margen arriba para no pegar al borde */
 }
 
 /* Primera línea: Icono */
@@ -75,7 +75,7 @@ body, html {
     font-family: Piedra; /* Tipografía decorativa Piedra */
     margin-top: 8px; /* Espacio de 8 píxeles sobre el texto */
     color: #333; /* Color gris oscuro para el texto */
-    margin-left: 15px; /* Empuja el texto hacia la derecha de la barra */
+    margin-left: 15px; ; /* Empuja el texto hacia la derecha de la barra */
 }
 
 @keyframes logo {
@@ -244,7 +244,6 @@ body, html {
     transform-style: preserve-3d; /* Permite que los hijos se muevan en el espacio 3D */
     transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.8s; /* Animación de apertura suave */
     position: relative; /* Referencia para elementos absolutos como la portada */
-    max-height: 600px;
 }
 
 .notebook-container.is-closed {
@@ -394,7 +393,6 @@ body, html {
     font-style: italic; /* Texto en cursiva */
     position: relative; /* Referencia para el resaltador */
     width: 100%; /* Ancho completo */
-    user-select: text; /* Permite que el usuario seleccione texto para copiar */
 }
 
 .right-page .note-line { padding-left: 25px; } /* Espacio extra para la espiral en página derecha */
@@ -417,17 +415,7 @@ body, html {
     z-index: 0; /* Por debajo del texto */
 }
 
-.note-line span { 
-    position: relative; /* Posicionamiento relativo para z-index */
-    z-index: 1; /* Asegura estar sobre el resaltador */
-    flex: 1; /* Ocupa el espacio disponible */
-    white-space: normal; /* Permite saltos de línea naturales */
-    word-break: break-word; /* Rompe palabras largas */
-    line-height: 28px; /* Altura de línea para legibilidad */
-    display: block; /* Comportamiento de bloque */
-    user-select: text; /* Permite seleccionar el texto de la nota */
-}
-
+.note-line span { position: relative; z-index: 1; flex: 1; white-space: normal; word-break: break-word; line-height: 28px; display: block; } /* Estilo del texto de la nota */
 .note-line.completed span { text-decoration: line-through; color: #777 !important; } /* Tachado si la tarea está lista */
 
 .delete-btn { position: relative; z-index: 2; color: #a32a2a; font-weight: bold; font-size: 1.1rem; padding: 0 6px; display: none; height: 28px; line-height: 28px; } /* Botón X */
@@ -436,25 +424,7 @@ body, html {
 /* ==========================================
    9. EDITOR Y OTROS
    ========================================== */
-.note-input { 
-    flex: 1; /* Ocupa el espacio disponible */
-    border: none; /* Sin bordes */
-    outline: none; /* Sin borde de enfoque predeterminado */
-    background: transparent; /* Fondo transparente */
-    font-family: 'Sriracha', cursive; /* Fuente manuscrita */
-    font-style: italic; /* Estilo cursiva */
-    color: inherit; /* Hereda el color de la tinta */
-    width: 100%; /* Ancho completo */
-    resize: none; /* Evita que el usuario cambie el tamaño manualmente */
-    line-height: 28px; /* Altura de línea igual al papel */
-    font-size: inherit; /* Hereda el tamaño configurado */
-    overflow: hidden; /* Oculta barras de desplazamiento */
-    padding: 0; /* Sin relleno */
-    margin: 0; /* Sin márgenes */
-    position: relative; /* Posicionamiento relativo */
-    z-index: 5; /* Por encima de otros elementos */
-    user-select: text; /* Permite seleccionar y pegar texto */
-}
+.note-input { flex: 1; border: none; outline: none; background: transparent; font-family: 'Sriracha', cursive; font-style: italic; color: inherit; width: 100%; resize: none; line-height: 28px; font-size: inherit; overflow: hidden; padding: 0; margin: 0; position: relative; z-index: 5; } /* Estilo del textarea de edición */
 
 .color-picker { position: absolute; right: 15px; top: -22px; display: flex; gap: 8px; background: white; padding: 5px 10px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 100; } /* Caja de selección de color */
 .color-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); transition: transform 0.2s; } /* Círculos de color */
