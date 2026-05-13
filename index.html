@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -48,8 +50,9 @@
             <!-- Nuevo elemento para el reloj -->
             <div id="clock-display" class="clock-box">00:00:00</div>
             
-            <!-- Input oculto sigue aquí para ser funcional -->
+            <!-- Inputs ocultos para funcionalidades -->
             <input type="date" id="date-search-input" onchange="jumpToDate(this.value)">
+            <input type="date" id="date-move-input" style="display:none" onchange="moveNoteToDate(this.value)">
         </header>
         
         <div class="notebook-container is-closed" id="swipe-area">
