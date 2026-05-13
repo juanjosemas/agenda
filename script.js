@@ -19,6 +19,7 @@ let isLongPressActive = false;
 
 let lastEditedLineInfo = { key: null, index: null }; 
 let currentActiveInput = null; 
+let noteToMove = null; // Almacena la nota seleccionada para mover
 
 const linesL = document.getElementById('lines-l');
 const linesR = document.getElementById('lines-r');
@@ -198,17 +199,15 @@ function renderPageLines(container, data) {
         };
         lineDiv.appendChild(del);
 
+        // Lógica de Pulsación Larga para MOVER nota
         const startPress = () => {
             isLongPressActive = false;
             longPressTimer = setTimeout(() => {
                 if(lineData.text !== "") {
                     isLongPressActive = true;
-                    if (!db[data.key]) db[data.key] = {};
-                    db[data.key][i].high = !db[data.key][i].high;
-                    save(); 
-                    render();
+                    requestMoveNote(data.key, i); // Abrir calendario para mover
                 }
-            }, 600); 
+            }, 800); // Tiempo necesario para considerar pulsación larga
         };
 
         const endPress = () => clearTimeout(longPressTimer);
@@ -220,7 +219,12 @@ function renderPageLines(container, data) {
         lineDiv.ontouchend = endPress;
 
         lineDiv.onclick = (e) => {
-            if (isLongPressActive) { isLongPressActive = false; return; }
+            // Si viene de una pulsación larga, ignoramos el clic normal
+            if (isLongPressActive) { 
+                isLongPressActive = false; 
+                return; 
+            }
+            
             lastEditedLineInfo = { key: data.key, index: i };
 
             if (clickTimer == null) {
@@ -242,8 +246,53 @@ function renderPageLines(container, data) {
 }
 
 /* ==========================================
-   EDICIÓN
+   EDICIÓN Y MOVIMIENTO
    ========================================== */
+function requestMoveNote(sourceKey, sourceIndex) {
+    noteToMove = { key: sourceKey, index: sourceIndex };
+    const moveInput = document.getElementById('date-move-input');
+    // Pre-seleccionamos hoy en el calendario
+    moveInput.value = new Date().toISOString().split('T')[0];
+    moveInput.showPicker();
+}
+
+function moveNoteToDate(targetDate) {
+    if (!noteToMove || !targetDate) return;
+    
+    const sourceKey = noteToMove.key;
+    const sourceIndex = noteToMove.index;
+    const sourceData = db[sourceKey][sourceIndex];
+
+    // Aseguramos que el objeto del día de destino existe
+    if (!db[targetDate]) db[targetDate] = {};
+
+    // Buscamos la primera línea vacía disponible (del 1 al 23)
+    let targetIndex = -1;
+    for (let i = 1; i < 24; i++) {
+        if (!db[targetDate][i]) {
+            targetIndex = i;
+            break;
+        }
+    }
+
+    if (targetIndex === -1) {
+        alert("No hay líneas libres en el día seleccionado.");
+    } else {
+        // Transferimos la información
+        db[targetDate][targetIndex] = { ...sourceData };
+        // Eliminamos la original
+        delete db[sourceKey][sourceIndex];
+        
+        save();
+        alert("Nota movida.");
+        
+        // Viajamos a la fecha destino para confirmar el movimiento
+        jumpToDate(targetDate);
+    }
+    
+    noteToMove = null;
+}
+
 function startEditing(lineDiv, key, index, currentText, currentColor) {
     const isHigh = (db[key] && db[key][index] && db[key][index].high);
     lineDiv.innerHTML = ''; 
